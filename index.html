@@ -1,36 +1,251 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Precedent Study — Part 1 Datasheet</title>
-    <style>
-      body{font-family: Arial, Helvetica, sans-serif;max-width:900px;margin:40px auto;padding:0 20px;color:#222}
-      header h1{margin:0 0 8px}
-      .datasheet{background:#f9f9f9;padding:18px;border-radius:6px;border:1px solid #eee}
-      .field{margin:10px 0}
-      .label{font-weight:700}
-    </style>
-  </head>
-  <body>
-    <header>
-      <h1>Precedent Study — Part 1: Datasheet</h1>
-      <p>Fill out the datasheet for your selected project and add bibliographies. Choose one Forensic Architecture project and confirm it by adding your name on the Figma board.</p>
-    </header>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Saydnaya — Precedent Study, Part 1: Datasheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,72,400;0,72,500;0,72,600;1,72,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0d0d0c;
+    --panel: #151513;
+    --line: #2b2a26;
+    --paper: #ece7dc;
+    --muted: #948d7d;
+    --accent: #a63a2b;   /* evidence red, kept dull rather than warm/orange */
+    --tag: #b99a3d;      /* archival amber, used sparingly */
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--paper);
+    font-family:'Newsreader', Georgia, serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{
+    font-family:'IBM Plex Mono', ui-monospace, monospace;
+    letter-spacing:.04em;
+  }
+  a{color:var(--paper); text-decoration-color:var(--accent); text-underline-offset:3px;}
+  a:hover{color:var(--accent);}
+  a:focus-visible, button:focus-visible{outline:2px solid var(--tag); outline-offset:3px;}
 
-    <main>
-      <section class="datasheet">
-        <div class="field"><div class="label">Title</div><div id="title">[Project title]</div></div>
-        <div class="field"><div class="label">Author(s)</div><div id="author">Forensic Architecture</div></div>
-        <div class="field"><div class="label">Year</div><div id="year">[Year]</div></div>
-        <div class="field"><div class="label">Format</div><div id="format">[Format]</div></div>
-        <div class="field"><div class="label">Intended audience</div><div id="audience">[Audience]</div></div>
-        <div class="field"><div class="label">Short description</div><div id="desc">[Short description]</div></div>
-        <div class="field"><div class="label">Bibliography — by author</div><div id="byauthor">[links]</div></div>
-        <div class="field"><div class="label">Bibliography — by others</div><div id="byothers">[links]</div></div>
-      </section>
+  .wrap{max-width:920px; margin:0 auto; padding:0 24px;}
 
-      <p style="margin-top:18px">To publish: push this repo to GitHub and enable GitHub Pages for the `website/` folder, or follow the CDW tutorials linked in the README.</p>
-    </main>
-  </body>
+  /* ---------- header ---------- */
+  header.top{
+    border-bottom:1px solid var(--line);
+    padding:56px 0 40px;
+  }
+  .file-tag{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-size:11px; color:var(--muted); text-transform:uppercase;
+    margin-bottom:28px; flex-wrap:wrap; gap:8px;
+  }
+  .file-tag span.accent{color:var(--accent);}
+  h1{
+    font-weight:500; font-size:clamp(34px, 5.4vw, 58px);
+    line-height:1.05; margin:0 0 14px; max-width:16ch;
+    letter-spacing:-.01em;
+  }
+  .subhead{
+    color:var(--muted); font-size:15px; max-width:56ch; font-style:italic;
+  }
+  .stamp{
+    display:inline-block; margin-top:26px; padding:7px 14px;
+    border:1px solid var(--accent); color:var(--accent);
+    font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+    transform:rotate(-1.2deg);
+  }
+
+  /* ---------- datasheet ---------- */
+  section.sheet{padding:52px 0; border-bottom:1px solid var(--line);}
+  .sheet-head{
+    font-size:11px; color:var(--tag); text-transform:uppercase; margin-bottom:22px;
+  }
+  dl.fields{
+    display:grid; grid-template-columns: 200px 1fr; row-gap:0;
+    border-top:1px solid var(--line);
+  }
+  dl.fields > div{
+    display:contents;
+  }
+  dl.fields dt{
+    font-size:12px; color:var(--muted); text-transform:uppercase;
+    padding:16px 16px 16px 0; border-bottom:1px solid var(--line);
+    align-self:start;
+  }
+  dl.fields dd{
+    margin:0; padding:16px 0; border-bottom:1px solid var(--line);
+    font-size:16.5px;
+  }
+  dl.fields dd .small{color:var(--muted); font-size:13.5px; font-family:'IBM Plex Mono',monospace; letter-spacing:0;}
+
+  /* ---------- description ---------- */
+  section.desc{padding:52px 0; border-bottom:1px solid var(--line);}
+  section.desc p{font-size:18px; max-width:70ch; margin:0 0 18px;}
+  section.desc p:last-child{margin-bottom:0;}
+
+  /* ---------- bibliography ---------- */
+  section.biblio{padding:52px 0; border-bottom:1px solid var(--line);}
+  .biblio-grid{display:grid; grid-template-columns:1fr 1fr; gap:40px;}
+  @media (max-width:720px){ .biblio-grid{grid-template-columns:1fr;} dl.fields{grid-template-columns:140px 1fr;} }
+  .biblio-grid h3{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase;
+    color:var(--tag); font-weight:500; letter-spacing:.08em; margin:0 0 18px;
+    padding-bottom:10px; border-bottom:1px solid var(--line);
+  }
+  ol.refs{list-style:none; margin:0; padding:0; counter-reset:ref;}
+  ol.refs li{
+    counter-increment:ref; position:relative; padding:0 0 16px 30px;
+    font-size:14.5px; color:var(--paper); margin-bottom:16px;
+    border-bottom:1px dashed var(--line);
+  }
+  ol.refs li:last-child{border-bottom:none; margin-bottom:0;}
+  ol.refs li::before{
+    content: counter(ref, decimal-leading-zero);
+    position:absolute; left:0; top:0; color:var(--accent);
+    font-family:'IBM Plex Mono',monospace; font-size:12px;
+  }
+  ol.refs li .cite-title{display:block; margin-bottom:3px;}
+  ol.refs li .cite-meta{display:block; color:var(--muted); font-family:'IBM Plex Mono',monospace; font-size:11.5px;}
+  ol.refs li a{word-break:break-word;}
+
+  /* ---------- note / publish ---------- */
+  section.note{padding:44px 0 70px;}
+  section.note .box{
+    border:1px solid var(--line); padding:22px 24px; font-size:13.5px; color:var(--muted);
+  }
+  section.note .box strong{color:var(--paper); font-weight:500;}
+  section.note code{
+    background:var(--panel); padding:2px 6px; border-radius:2px;
+    font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--paper);
+  }
+
+  footer{
+    padding:28px 0 60px; font-size:11.5px; color:var(--muted);
+    font-family:'IBM Plex Mono',monospace; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="top">
+    <div class="file-tag mono">
+      <span>Computational Design Workflows — Precedent Study</span>
+      <span class="accent">Part 01 / 03 — Datasheet</span>
+    </div>
+    <h1>Saydnaya: Inside a Syrian Torture Prison</h1>
+    <p class="subhead">A precedent study of Forensic Architecture and Amnesty International's 2016 spatial and acoustic reconstruction of Saydnaya military prison, Syria.</p>
+    <div class="stamp mono">No photographs available — reconstructed from testimony</div>
+  </header>
+
+  <section class="sheet">
+    <div class="sheet-head mono">Datasheet</div>
+    <dl class="fields">
+      <div>
+        <dt class="mono">Title</dt>
+        <dd>Saydnaya: Inside a Syrian Torture Prison <span class="small">(published as "Saydnaya" on Forensic Architecture's site)</span></dd>
+      </div>
+      <div>
+        <dt class="mono">Author(s)</dt>
+        <dd>Forensic Architecture (Goldsmiths, University of London), in collaboration with Amnesty International. Acoustic investigation by Lawrence Abu Hamdan; principal investigator Eyal Weizman.</dd>
+      </div>
+      <div>
+        <dt class="mono">Year</dt>
+        <dd>2016 <span class="small">— interviews conducted April 2016; presented at the 2016 Venice Biennale</span></dd>
+      </div>
+      <div>
+        <dt class="mono">Format</dt>
+        <dd>Interactive web-based investigation: a navigable 3D architectural reconstruction paired with acoustic modeling, witness-testimony video, and a downloadable written report.</dd>
+      </div>
+      <div>
+        <dt class="mono">Intended audience</dt>
+        <dd>General public and international press; human-rights monitors and bodies such as the International Syria Support Group; campaigners; and the broader spatial-forensics research community that Forensic Architecture addresses through exhibitions and publications.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="desc">
+    <div class="sheet-head mono">Short Description</div>
+    <p>Saydnaya prison, north of Damascus, has been closed to independent monitors since the start of the Syrian uprising in 2011, and no recent photographs of its interior exist. To document conditions inside, Forensic Architecture and Amnesty International worked with five former detainees, now refugees in Turkey, to rebuild the prison from memory. An architect guided each witness through a 3D modeling process, cross-checking their descriptions of cells, stairwells, and corridors against an earlier model built from satellite imagery and prior interviews.</p>
+    <p>Because many prisoners were kept blindfolded or in darkness, sound became a primary form of evidence. Lawrence Abu Hamdan led a parallel acoustic investigation, using witnesses' memories of echo, reverberation, and ambient noise to help verify the scale and layout of specific spaces and to reconstruct particular incidents. The resulting website lets a visitor move through the prison by location or by individual witness, folding testimony, video, and model together into a single interface, and links out to Amnesty's campaign for independent access to the prison.</p>
+  </section>
+
+  <section class="biblio">
+    <div class="sheet-head mono">Bibliography</div>
+    <div class="biblio-grid">
+      <div>
+        <h3>By the Author / Collaborators</h3>
+        <ol class="refs">
+          <li>
+            <span class="cite-title">Forensic Architecture, project page for <em>Saydnaya</em></span>
+            <span class="cite-meta"><a href="https://forensic-architecture.org/investigation/saydnaya" target="_blank" rel="noopener">forensic-architecture.org/investigation/saydnaya</a></span>
+          </li>
+          <li>
+            <span class="cite-title">Amnesty International, "Explore Saydnaya" — interactive site</span>
+            <span class="cite-meta"><a href="https://saydnaya.amnesty.org/?kind=explore" target="_blank" rel="noopener">saydnaya.amnesty.org</a></span>
+          </li>
+          <li>
+            <span class="cite-title">Amnesty International, "About" page, Explore Saydnaya</span>
+            <span class="cite-meta"><a href="https://saydnaya.amnesty.org/en/about.html" target="_blank" rel="noopener">saydnaya.amnesty.org/en/about.html</a></span>
+          </li>
+          <li>
+            <span class="cite-title">Amnesty International, "Methodology" page, Explore Saydnaya</span>
+            <span class="cite-meta"><a href="https://saydnaya.amnesty.org/en/methodology.html" target="_blank" rel="noopener">saydnaya.amnesty.org/en/methodology.html</a></span>
+          </li>
+          <li>
+            <span class="cite-title">Lawrence Abu Hamdan, project note on <em>Saydnaya</em></span>
+            <span class="cite-meta"><a href="http://lawrenceabuhamdan.com/saydnaya" target="_blank" rel="noopener">lawrenceabuhamdan.com/saydnaya</a></span>
+          </li>
+          <li>
+            <span class="cite-title">Earshot (Abu Hamdan's sonic-investigation practice), "Saydnaya: Inside a Syrian torture prison"</span>
+            <span class="cite-meta"><a href="https://earshot.ngo/investigations/saydnaya-inside-a-syrian-torture-prison" target="_blank" rel="noopener">earshot.ngo</a></span>
+          </li>
+        </ol>
+      </div>
+      <div>
+        <h3>By Others — Review, Criticism, Reception</h3>
+        <ol class="refs">
+          <li>
+            <span class="cite-title">Sabrina Santos, "Forensic Architecture Digitally Reconstruct Secret Syrian Torture Prison from the Memories of Survivors," ArchDaily</span>
+            <span class="cite-meta"><a href="https://www.archdaily.com/793480/forensic-architecture-digitally-reconstruct-secret-syrian-torture-prison-from-the-memories-of-survivors" target="_blank" rel="noopener">archdaily.com</a></span>
+          </li>
+          <li>
+            <span class="cite-title">Dezeen, "Forensic Architecture digitally reconstructs model of Syrian prison"</span>
+            <span class="cite-meta"><a href="https://www.dezeen.com/2016/08/19/forensic-architecture-digital-reconstruction-saydnaya-inside-syrian-torture-prison/" target="_blank" rel="noopener">dezeen.com</a></span>
+          </li>
+          <li>
+            <span class="cite-title">Fast Company, "How Forensic Architecture Revealed Details Of A Secret Military Prison In Syria"</span>
+            <span class="cite-meta"><a href="https://www.fastcompany.com/3068329/how-forensic-architecture-revealed-details-of-a-secret-military-priso" target="_blank" rel="noopener">fastcompany.com</a></span>
+          </li>
+          <li>
+            <span class="cite-title">MIT Open Documentary Lab, Docubase entry: "Saydnaya: Inside a Syrian Torture Prison"</span>
+            <span class="cite-meta"><a href="https://docubase.mit.edu/project/saydnaya-inside-a-syrian-torture-prison/" target="_blank" rel="noopener">docubase.mit.edu</a></span>
+          </li>
+        </ol>
+        <p style="margin-top:22px; font-size:12.5px; color:var(--muted);">Add further theory/review sources as you locate them in Part 2 — e.g. writing on Forensic Architecture's broader practice (Weizman, <em>Forensis</em>) that situates this project within it.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="note">
+    <div class="box mono">
+      <strong>To publish:</strong> push this file to a GitHub repo (e.g. as <code>index.html</code> or inside a <code>/docs</code> folder), then enable GitHub Pages in the repo's Settings → Pages, following CDW tutorials 1 + 2. Update the field values above directly in the HTML — each is inside a <code>&lt;dd&gt;</code> tag — as your research develops for Part 2.
+    </div>
+  </section>
+
+  <footer class="mono">
+    <span>Precedent Study — Part 1 / Due Thursday, July 2</span>
+    <span>Khaled — Columbia GSAPP</span>
+  </footer>
+
+</div>
+</body>
 </html>
