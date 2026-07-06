@@ -9,26 +9,27 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,72,400;0,72,500;0,72,600;1,72,400&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #0d0d0c;
-    --panel: #151513;
-    --line: #2b2a26;
-    --paper: #ece7dc;
-    --muted: #948d7d;
-    --accent: #a63a2b;   /* evidence red, kept dull rather than warm/orange */
-    --tag: #b99a3d;      /* archival amber, used sparingly */
+    --bg: #050505;
+    --panel: #0f0f0f;
+    --line: #232220;
+    --paper: #f3efe8;
+    --muted: #8e887d;
+    --accent: #ffffff;
+    --tag: #d0c7b4;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
     background:var(--bg);
     color:var(--paper);
-    font-family:'Newsreader', Georgia, serif;
+    font-family:'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
     line-height:1.55;
     -webkit-font-smoothing:antialiased;
   }
   .mono{
-    font-family:'IBM Plex Mono', ui-monospace, monospace;
-    letter-spacing:.04em;
+    font-family:'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+    letter-spacing:.12em;
+    text-transform:uppercase;
   }
   a{color:var(--paper); text-decoration-color:var(--accent); text-underline-offset:3px;}
   a:hover{color:var(--accent);}
@@ -128,8 +129,44 @@
 
   footer{
     padding:28px 0 60px; font-size:11.5px; color:var(--muted);
-    font-family:'IBM Plex Mono',monospace; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-family:'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Georgia, serif; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
   }
+
+  /* ---------- rhizome plateau ---------- */
+  .rhizome-section{padding:52px 0 24px;}
+  .rhizome-intro{max-width:72ch; font-size:17px; color:#ddd5c8; margin:0 0 20px;}
+  .rhizome-card{
+    position:relative; display:grid; grid-template-columns:1.45fr .85fr; gap:18px;
+    border:1px solid var(--line); padding:20px; background:var(--panel); min-height:640px;
+  }
+  .rhizome-callout{
+    position:absolute; top:-12px; left:18px; background:var(--panel); padding:0 8px;
+    font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--tag);
+  }
+  .rhizome-canvas{position:relative; min-height:560px; border:1px solid var(--line); background:radial-gradient(circle at center, rgba(255,255,255,0.03), transparent 62%); overflow:hidden;}
+  .rhizome-hub{
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    padding:8px 12px; border:1px solid var(--paper); background:#0b0b0b; color:var(--paper);
+    font-size:11px; text-transform:uppercase; letter-spacing:.14em; white-space:nowrap;
+  }
+  .rhizome-node{
+    position:absolute; transform:translate(-50%,-50%); border:1px solid var(--paper); background:var(--paper);
+    color:#0a0a0a; padding:7px 9px; font-size:11px; line-height:1.15; cursor:pointer;
+    max-width:170px; text-align:left; box-shadow:0 0 0 1px rgba(255,255,255,0.04);
+    transition:transform .2s ease, background .2s ease, color .2s ease, border-color .2s ease;
+  }
+  .rhizome-node:hover, .rhizome-node.is-active{transform:translate(-50%,-50%) scale(1.03); background:#0e0e0e; color:var(--paper); border-color:var(--paper);}
+  .rhizome-node span{display:block; font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; margin-bottom:3px; color:inherit; opacity:.75;}
+  .rhizome-node strong{display:block; font-weight:500; font-size:11.5px;}
+  .rhizome-svg{position:absolute; inset:0; width:100%; height:100%; pointer-events:none;}
+  .rhizome-line{stroke:#7a766e; stroke-width:1; fill:none; opacity:.7;}
+  .rhizome-line.is-strong{stroke:var(--paper); opacity:.95;}
+  .rhizome-detail{border:1px solid var(--line); padding:18px; background:#121212; align-self:start; position:sticky; top:20px;}
+  .rhizome-detail .detail-label{font-size:11px; text-transform:uppercase; letter-spacing:.16em; color:var(--tag); margin-bottom:10px;}
+  .rhizome-detail h4{margin:0 0 8px; font-size:19px; font-weight:500;}
+  .rhizome-detail p{margin:0 0 10px; color:#ddd5c8; font-size:15px;}
+  .rhizome-detail .meta{font-size:11px; text-transform:uppercase; letter-spacing:.14em; color:var(--muted); margin-bottom:10px;}
+  @media (max-width:860px){ .rhizome-card{grid-template-columns:1fr;} .rhizome-detail{position:static;} }
 </style>
 </head>
 <body>
@@ -176,6 +213,20 @@
     <div class="sheet-head mono">Short Description</div>
     <p>Saydnaya prison, north of Damascus, has been closed to independent monitors since the start of the Syrian uprising in 2011, and no recent photographs of its interior exist. To document conditions inside, Forensic Architecture and Amnesty International worked with five former detainees, now refugees in Turkey, to rebuild the prison from memory. An architect guided each witness through a 3D modeling process, cross-checking their descriptions of cells, stairwells, and corridors against an earlier model built from satellite imagery and prior interviews.</p>
     <p>Because many prisoners were kept blindfolded or in darkness, sound became a primary form of evidence. Lawrence Abu Hamdan led a parallel acoustic investigation, using witnesses' memories of echo, reverberation, and ambient noise to help verify the scale and layout of specific spaces and to reconstruct particular incidents. The resulting website lets a visitor move through the prison by location or by individual witness, folding testimony, video, and model together into a single interface, and links out to Amnesty's campaign for independent access to the prison.</p>
+  </section>
+
+  <section class="rhizome-section">
+    <div class="sheet-head mono">Plateau / Rhizome</div>
+    <p class="rhizome-intro">This plateau behaves like a rhizome rather than a hierarchy: each analysis node is treated as a point of entry, connected first to the relevant analysis plateau, then to other points that share the same ontological operator or typology. The structure grows laterally, not linearly.</p>
+    <div class="rhizome-card">
+      <div class="rhizome-callout mono">Rhizome</div>
+      <div class="rhizome-canvas" id="rhizomeCanvas"></div>
+      <aside class="rhizome-detail" id="rhizomeDetail">
+        <div class="detail-label">Selected node</div>
+        <h4>Click a node to read its summary.</h4>
+        <p>Each point is anchored to an analysis plateau and linked across shared ontological operations.</p>
+      </aside>
+    </div>
   </section>
 
   <section class="biblio">
@@ -241,5 +292,128 @@
   </footer>
 
 </div>
+
+<script>
+  const rhizomeNodes = [
+    { id: 'witness', label: 'Witness testimony transcripts', plateau: 'Ontological Analysis', typology: 'Attribute', summary: 'Interviews conducted in Istanbul in April 2016.' },
+    { id: 'acoustic', label: 'Acoustic reconstruction', plateau: 'Ontological Analysis', typology: 'Attribute', summary: 'Recordings and reconstructed soundscape used as spatial evidence.' },
+    { id: 'verification', label: 'Verification operator', plateau: 'Ontological Analysis', typology: 'Operator', summary: 'Cross-references multiple witness accounts into one spatially consistent model.' },
+    { id: 'models', label: '3D reconstruction models', plateau: 'Ontological Analysis', typology: 'Attribute', summary: 'Architectural reconstruction models of cells, corridors, and stairwells.' },
+    { id: 'modes', label: 'Web interface modes', plateau: 'Ontological Analysis', typology: 'Attribute', summary: 'Exploration structured by location and by witness.' },
+    { id: 'constraint', label: 'Constraint-as-method operator', plateau: 'Ontological Analysis', typology: 'Operator', summary: 'Uses blindfolded sensory deprivation as a generative reconstruction method.' },
+    { id: 'sound-space', label: 'Sound-to-space operator', plateau: 'Ontological Analysis', typology: 'Operator', summary: 'Translates memory of echo, footsteps, and commands into a navigable acoustic model.' },
+    { id: 'spatial', label: 'Spatial context', plateau: 'Historical and Contextual Analysis', typology: 'Operator', summary: 'Situated in the Syrian civil war and Saydnaya’s absence of photographic record.' },
+    { id: 'audience', label: 'Observer / audience', plateau: 'Historical and Contextual Analysis', typology: 'Operator', summary: 'Addresses legal observers, the public, and witnesses as co-observers and co-authors.' },
+    { id: 'authorship', label: 'Institutional authorship', plateau: 'Historical and Contextual Analysis', typology: 'Operator', summary: 'Co-realized by Amnesty International and Forensic Architecture through interdisciplinary authorship.' },
+    { id: 'financial', label: 'Financial context', plateau: 'Historical and Contextual Analysis', typology: 'Operator', summary: 'Funded by Amnesty International, the David and Elaine Potter Foundation, and the Sigrid Rausing Trust.' },
+    { id: 'representational', label: 'Representational medium', plateau: 'Visual and Aesthetic Representation', typology: 'Attribute', summary: 'Low-poly, deliberately non-photographic 3D rendering substitutes for absent photographic evidence.' },
+    { id: 'navigation', label: 'Interface / navigation', plateau: 'Visual and Aesthetic Representation', typology: 'Operator', summary: 'First-person drag-based exploration positions the viewer as an embodied visitor.' },
+    { id: 'forensic', label: 'Forensic aesthetic', plateau: 'Visual and Aesthetic Representation', typology: 'Attribute', summary: 'Positioned between CAD documentation and courtroom-diagram literalism.' },
+    { id: 'campaign', label: 'Campaign / petition object', plateau: 'Ontological Analysis', typology: 'Attribute', summary: 'Nested advocacy action and petition within the site.' },
+    { id: 'bilingual', label: 'Bilingual text layer', plateau: 'Ontological Analysis', typology: 'Attribute', summary: 'Arabic and English textual layer embedded in the interface.' },
+    { id: 'credit', label: 'Credit structure', plateau: 'Ontological Analysis', typology: 'Attribute', summary: 'Named credits for modelers, acoustic investigation, translators, and video or sound editors.' },
+    { id: 'sensory', label: 'Sensory register', plateau: 'Visual and Aesthetic Representation', typology: 'Operator', summary: 'Sound is a primary representational medium; headphone use and acoustic testimony fragments are embedded as spatial annotations.' },
+    { id: 'linguistic', label: 'Linguistic / textual layer', plateau: 'Visual and Aesthetic Representation', typology: 'Operator', summary: 'The bilingual Arabic-English interface operates as a legitimacy and audience decision, not just accessibility.' },
+    { id: 'genre', label: 'Genre positioning', plateau: 'Visual and Aesthetic Representation', typology: 'Attribute', summary: 'Sits between CAD and architectural documentation and courtroom-diagram literalism as part of the forensic aesthetic lineage.' }
+  ];
+
+  const canvas = document.getElementById('rhizomeCanvas');
+  const detail = document.getElementById('rhizomeDetail');
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const groupCenters = {
+    'Ontological Analysis': { x: 30, y: 55 },
+    'Historical and Contextual Analysis': { x: 72, y: 55 },
+    'Visual and Aesthetic Representation': { x: 50, y: 26 }
+  };
+
+  function renderRhizome() {
+    canvas.querySelectorAll('.rhizome-node, .rhizome-hub, .rhizome-line').forEach((el) => el.remove());
+
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('class', 'rhizome-svg');
+    svg.setAttribute('viewBox', '0 0 100 100');
+    svg.setAttribute('preserveAspectRatio', 'none');
+    canvas.appendChild(svg);
+
+    const groups = [...new Set(rhizomeNodes.map((node) => node.plateau))];
+
+    groups.forEach((group) => {
+      const nodes = rhizomeNodes.filter((node) => node.plateau === group);
+      const center = groupCenters[group];
+      const hub = document.createElement('div');
+      hub.className = 'rhizome-hub';
+      hub.textContent = group;
+      hub.style.left = `${center.x}%`;
+      hub.style.top = `${center.y}%`;
+      canvas.appendChild(hub);
+
+      const radius = nodes.length > 7 ? 24 : nodes.length > 4 ? 28 : 32;
+      const angleStep = (Math.PI * 2) / nodes.length;
+      const angleOffset = group === 'Historical and Contextual Analysis' ? Math.PI / 6 : group === 'Visual and Aesthetic Representation' ? -Math.PI / 6 : 0;
+
+      nodes.forEach((node, index) => {
+        const angle = angleOffset + index * angleStep;
+        const x = center.x + Math.cos(angle) * radius;
+        const y = center.y + Math.sin(angle) * radius * 0.75;
+
+        const line = document.createElementNS(svgNS, 'line');
+        line.setAttribute('class', 'rhizome-line');
+        line.setAttribute('x1', center.x);
+        line.setAttribute('y1', center.y);
+        line.setAttribute('x2', x);
+        line.setAttribute('y2', y);
+        svg.appendChild(line);
+
+        const nodeEl = document.createElement('button');
+        nodeEl.type = 'button';
+        nodeEl.className = 'rhizome-node';
+        nodeEl.style.left = `${x}%`;
+        nodeEl.style.top = `${y}%`;
+        nodeEl.innerHTML = `<span>${node.typology}</span><strong>${node.label}</strong>`;
+        nodeEl.addEventListener('click', () => showSummary(node));
+        canvas.appendChild(nodeEl);
+      });
+
+      nodes.forEach((node, index) => {
+        const matching = nodes.filter((candidate) => candidate.typology === node.typology && candidate.id !== node.id);
+        matching.forEach((candidate) => {
+          const source = nodes.findIndex((entry) => entry.id === node.id);
+          const target = nodes.findIndex((entry) => entry.id === candidate.id);
+          const angleSource = angleOffset + source * angleStep;
+          const angleTarget = angleOffset + target * angleStep;
+          const x1 = center.x + Math.cos(angleSource) * radius;
+          const y1 = center.y + Math.sin(angleSource) * radius * 0.75;
+          const x2 = center.x + Math.cos(angleTarget) * radius;
+          const y2 = center.y + Math.sin(angleTarget) * radius * 0.75;
+          const line = document.createElementNS(svgNS, 'line');
+          line.setAttribute('class', 'rhizome-line is-strong');
+          line.setAttribute('x1', x1);
+          line.setAttribute('y1', y1);
+          line.setAttribute('x2', x2);
+          line.setAttribute('y2', y2);
+          svg.appendChild(line);
+        });
+      });
+    });
+
+    const firstNode = rhizomeNodes[0];
+    showSummary(firstNode);
+  }
+
+  function showSummary(node) {
+    document.querySelectorAll('.rhizome-node').forEach((button) => {
+      button.classList.toggle('is-active', button.innerText.includes(node.label));
+    });
+
+    detail.innerHTML = `
+      <div class="detail-label">${node.plateau}</div>
+      <h4>${node.label}</h4>
+      <div class="meta">${node.typology}</div>
+      <p>${node.summary}</p>
+    `;
+  }
+
+  renderRhizome();
+</script>
 </body>
 </html>
