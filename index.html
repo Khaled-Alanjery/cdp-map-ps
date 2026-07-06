@@ -137,35 +137,41 @@
   .rhizome-card{
     position:relative; padding:0; background:transparent; min-height:780px; border:none;
   }
-  .rhizome-callout{display:none;}
-  .rhizome-canvas{position:relative; min-height:760px; border:none; background:transparent; overflow:hidden;}
+  .rhizome-canvas{position:relative; min-height:760px; border:none; background:transparent; overflow:hidden; animation:drift-field 12s ease-in-out infinite alternate;}
   .rhizome-hub{
     position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
     width:128px; height:128px; border-radius:50%; display:grid; place-items:center;
     border:1px solid var(--line); background:transparent; color:var(--paper);
     font-size:11px; text-transform:uppercase; letter-spacing:.14em; text-align:center; padding:10px;
+    animation:drift-node 9s ease-in-out infinite alternate;
   }
   .rhizome-node{
     position:absolute; transform:translate(-50%,-50%); border:1px solid var(--line); background:transparent;
     color:var(--paper); width:92px; height:92px; border-radius:50%; padding:8px; font-size:10px; line-height:1.15;
     cursor:pointer; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;
     transition:transform .2s ease, border-color .2s ease, color .2s ease;
+    animation:drift-node 8s ease-in-out infinite alternate;
   }
   .rhizome-node:hover, .rhizome-node.is-active{transform:translate(-50%,-50%) scale(1.04); border-color:var(--paper); color:var(--paper);}
   .rhizome-node span{display:block; font-size:9px; text-transform:uppercase; letter-spacing:.12em; margin-bottom:3px; color:inherit; opacity:.75;}
   .rhizome-node strong{display:block; font-weight:500; font-size:10.5px;}
   .rhizome-svg{position:absolute; inset:0; width:100%; height:100%; pointer-events:none;}
-  .rhizome-line{stroke:var(--line); stroke-width:1.2; fill:none; opacity:.95;}
+  .rhizome-line{stroke:var(--line); stroke-width:0.8; fill:none; opacity:.95;}
   .rhizome-line.is-strong{stroke:var(--paper); opacity:1;}
   .rhizome-detail{
-    position:absolute; left:12px; bottom:12px; max-width:34ch; padding:0; background:transparent; border:none;
-    z-index:3;
+    position:absolute; max-width:280px; padding:14px 16px; background:rgba(5,5,5,0.62);
+    border:1px solid rgba(242,238,231,0.22); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+    box-shadow:0 0 0 1px rgba(242,238,231,0.04); z-index:3; pointer-events:none; opacity:0;
+    transform:translate(-8px, 8px) scale(.98); transition:opacity .25s ease, transform .25s ease;
   }
+  .rhizome-detail.is-visible{opacity:1; transform:translate(0,0) scale(1);}
   .rhizome-detail .detail-label{font-size:10px; text-transform:uppercase; letter-spacing:.16em; color:var(--tag); margin-bottom:8px;}
-  .rhizome-detail h4{margin:0 0 8px; font-size:19px; font-weight:500;}
-  .rhizome-detail p{margin:0 0 10px; color:#ddd5c8; font-size:15px;}
+  .rhizome-detail h4{margin:0 0 8px; font-size:17px; font-weight:500; line-height:1.2;}
+  .rhizome-detail p{margin:0; color:#f2eee7; font-size:14px; line-height:1.45;}
   .rhizome-detail .meta{font-size:10px; text-transform:uppercase; letter-spacing:.14em; color:var(--muted); margin-bottom:8px;}
-  @media (max-width:860px){ .rhizome-card{min-height:720px;} .rhizome-canvas{min-height:700px;} .rhizome-detail{position:static; max-width:none; margin-top:12px;} }
+  @keyframes drift-field{0%{transform:translate3d(-1.2%, -1.2%, 0);} 100%{transform:translate3d(1.2%, 1.2%, 0);}}
+  @keyframes drift-node{0%{transform:translate(-50%,-50%) translate3d(-1.5px,-1.2px,0);} 100%{transform:translate(-50%,-50%) translate3d(1.5px,1.2px,0);}}
+  @media (max-width:860px){ .rhizome-card{min-height:720px;} .rhizome-canvas{min-height:700px;} .rhizome-detail{max-width:240px;} }
 </style>
 </head>
 <body>
@@ -319,6 +325,10 @@
   const canvas = document.getElementById('rhizomeCanvas');
   const detail = document.getElementById('rhizomeDetail');
   const svgNS = 'http://www.w3.org/2000/svg';
+  let activeNode = null;
+  let targetX = 20;
+  let targetY = 20;
+  let frameId = null;
   const groupCenters = {
     'Ontological Analysis': { x: 24, y: 24 },
     'Historical and Contextual Analysis': { x: 76, y: 50 },
@@ -369,8 +379,9 @@
         nodeEl.className = 'rhizome-node';
         nodeEl.style.left = `${x}%`;
         nodeEl.style.top = `${y}%`;
+        nodeEl.style.animationDelay = `${(index % 5) * 0.25}s`;
         nodeEl.innerHTML = `<span>${node.typology}</span><strong>${node.label}</strong>`;
-        nodeEl.addEventListener('click', () => showSummary(node));
+        nodeEl.addEventListener('click', (event) => showSummary(node, event));
         canvas.appendChild(nodeEl);
       });
 
@@ -397,10 +408,11 @@
     });
 
     const firstNode = rhizomeNodes[0];
-    showSummary(firstNode);
+    showSummary(firstNode, { clientX: window.innerWidth * 0.5, clientY: window.innerHeight * 0.5 });
   }
 
-  function showSummary(node) {
+  function showSummary(node, event) {
+    activeNode = node;
     document.querySelectorAll('.rhizome-node').forEach((button) => {
       button.classList.toggle('is-active', button.innerText.includes(node.label));
     });
@@ -411,7 +423,49 @@
       <div class="meta">${node.typology}</div>
       <p>${node.summary}</p>
     `;
+    detail.classList.add('is-visible');
+
+    const rect = canvas.getBoundingClientRect();
+    const anchorX = event ? event.clientX - rect.left : rect.width * 0.5;
+    const anchorY = event ? event.clientY - rect.top : rect.height * 0.5;
+    updateCalloutPosition(anchorX, anchorY);
   }
+
+  function updateCalloutPosition(x, y) {
+    const rect = canvas.getBoundingClientRect();
+    targetX = Math.min(rect.width - 140, Math.max(20, x + 16));
+    targetY = Math.min(rect.height - 80, Math.max(20, y - 18));
+    if (!frameId) {
+      frameId = requestAnimationFrame(stepCallout);
+    }
+  }
+
+  function stepCallout() {
+    const currentX = parseFloat(detail.style.left || '20');
+    const currentY = parseFloat(detail.style.top || '20');
+    const nextX = currentX + (targetX - currentX) * 0.2;
+    const nextY = currentY + (targetY - currentY) * 0.2;
+    detail.style.left = `${nextX}px`;
+    detail.style.top = `${nextY}px`;
+
+    if (Math.hypot(nextX - targetX, nextY - targetY) > 0.6) {
+      frameId = requestAnimationFrame(stepCallout);
+    } else {
+      frameId = null;
+    }
+  }
+
+  canvas.addEventListener('pointermove', (event) => {
+    if (!activeNode) return;
+    updateCalloutPosition(event.clientX - canvas.getBoundingClientRect().left, event.clientY - canvas.getBoundingClientRect().top);
+  });
+
+  canvas.addEventListener('pointerleave', () => {
+    if (activeNode) {
+      detail.classList.remove('is-visible');
+      activeNode = null;
+    }
+  });
 
   renderRhizome();
 </script>
