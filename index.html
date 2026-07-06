@@ -10,12 +10,12 @@
 <style>
   :root{
     --bg: #050505;
-    --panel: #0f0f0f;
-    --line: #232220;
-    --paper: #f3efe8;
-    --muted: #8e887d;
-    --accent: #ffffff;
-    --tag: #d0c7b4;
+    --panel: #0d0d0c;
+    --line: #4f4a43;
+    --paper: #f2eee7;
+    --muted: #8f887f;
+    --accent: #f2eee7;
+    --tag: #b9b0a2;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -35,12 +35,11 @@
   a:hover{color:var(--accent);}
   a:focus-visible, button:focus-visible{outline:2px solid var(--tag); outline-offset:3px;}
 
-  .wrap{max-width:920px; margin:0 auto; padding:0 24px;}
+  .wrap{max-width:none; width:100%; margin:0; padding:0 6px;}
 
   /* ---------- header ---------- */
   header.top{
-    border-bottom:1px solid var(--line);
-    padding:56px 0 40px;
+    padding:28px 0 20px;
   }
   .file-tag{
     display:flex; justify-content:space-between; align-items:baseline;
@@ -64,7 +63,7 @@
   }
 
   /* ---------- datasheet ---------- */
-  section.sheet{padding:52px 0; border-bottom:1px solid var(--line);}
+  section.sheet{padding:24px 0 16px;}
   .sheet-head{
     font-size:11px; color:var(--tag); text-transform:uppercase; margin-bottom:22px;
   }
@@ -87,12 +86,12 @@
   dl.fields dd .small{color:var(--muted); font-size:13.5px; font-family:'IBM Plex Mono',monospace; letter-spacing:0;}
 
   /* ---------- description ---------- */
-  section.desc{padding:52px 0; border-bottom:1px solid var(--line);}
+  section.desc{padding:24px 0 16px;}
   section.desc p{font-size:18px; max-width:70ch; margin:0 0 18px;}
   section.desc p:last-child{margin-bottom:0;}
 
   /* ---------- bibliography ---------- */
-  section.biblio{padding:52px 0; border-bottom:1px solid var(--line);}
+  section.biblio{padding:24px 0 16px;}
   .biblio-grid{display:grid; grid-template-columns:1fr 1fr; gap:40px;}
   @media (max-width:720px){ .biblio-grid{grid-template-columns:1fr;} dl.fields{grid-template-columns:140px 1fr;} }
   .biblio-grid h3{
@@ -133,40 +132,40 @@
   }
 
   /* ---------- rhizome plateau ---------- */
-  .rhizome-section{padding:52px 0 24px;}
-  .rhizome-intro{max-width:72ch; font-size:17px; color:#ddd5c8; margin:0 0 20px;}
+  .rhizome-section{padding:24px 0 12px;}
+  .rhizome-intro{max-width:74ch; font-size:17px; color:#ddd5c8; margin:0 0 16px;}
   .rhizome-card{
-    position:relative; display:grid; grid-template-columns:1.45fr .85fr; gap:18px;
-    border:1px solid var(--line); padding:20px; background:var(--panel); min-height:640px;
+    position:relative; padding:0; background:transparent; min-height:780px; border:none;
   }
-  .rhizome-callout{
-    position:absolute; top:-12px; left:18px; background:var(--panel); padding:0 8px;
-    font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--tag);
-  }
-  .rhizome-canvas{position:relative; min-height:560px; border:1px solid var(--line); background:radial-gradient(circle at center, rgba(255,255,255,0.03), transparent 62%); overflow:hidden;}
+  .rhizome-callout{display:none;}
+  .rhizome-canvas{position:relative; min-height:760px; border:none; background:transparent; overflow:hidden;}
   .rhizome-hub{
     position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-    padding:8px 12px; border:1px solid var(--paper); background:#0b0b0b; color:var(--paper);
-    font-size:11px; text-transform:uppercase; letter-spacing:.14em; white-space:nowrap;
+    width:128px; height:128px; border-radius:50%; display:grid; place-items:center;
+    border:1px solid var(--line); background:transparent; color:var(--paper);
+    font-size:11px; text-transform:uppercase; letter-spacing:.14em; text-align:center; padding:10px;
   }
   .rhizome-node{
-    position:absolute; transform:translate(-50%,-50%); border:1px solid var(--paper); background:var(--paper);
-    color:#0a0a0a; padding:7px 9px; font-size:11px; line-height:1.15; cursor:pointer;
-    max-width:170px; text-align:left; box-shadow:0 0 0 1px rgba(255,255,255,0.04);
-    transition:transform .2s ease, background .2s ease, color .2s ease, border-color .2s ease;
+    position:absolute; transform:translate(-50%,-50%); border:1px solid var(--line); background:transparent;
+    color:var(--paper); width:92px; height:92px; border-radius:50%; padding:8px; font-size:10px; line-height:1.15;
+    cursor:pointer; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;
+    transition:transform .2s ease, border-color .2s ease, color .2s ease;
   }
-  .rhizome-node:hover, .rhizome-node.is-active{transform:translate(-50%,-50%) scale(1.03); background:#0e0e0e; color:var(--paper); border-color:var(--paper);}
-  .rhizome-node span{display:block; font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; margin-bottom:3px; color:inherit; opacity:.75;}
-  .rhizome-node strong{display:block; font-weight:500; font-size:11.5px;}
+  .rhizome-node:hover, .rhizome-node.is-active{transform:translate(-50%,-50%) scale(1.04); border-color:var(--paper); color:var(--paper);}
+  .rhizome-node span{display:block; font-size:9px; text-transform:uppercase; letter-spacing:.12em; margin-bottom:3px; color:inherit; opacity:.75;}
+  .rhizome-node strong{display:block; font-weight:500; font-size:10.5px;}
   .rhizome-svg{position:absolute; inset:0; width:100%; height:100%; pointer-events:none;}
-  .rhizome-line{stroke:#7a766e; stroke-width:1; fill:none; opacity:.7;}
-  .rhizome-line.is-strong{stroke:var(--paper); opacity:.95;}
-  .rhizome-detail{border:1px solid var(--line); padding:18px; background:#121212; align-self:start; position:sticky; top:20px;}
-  .rhizome-detail .detail-label{font-size:11px; text-transform:uppercase; letter-spacing:.16em; color:var(--tag); margin-bottom:10px;}
+  .rhizome-line{stroke:var(--line); stroke-width:1.2; fill:none; opacity:.95;}
+  .rhizome-line.is-strong{stroke:var(--paper); opacity:1;}
+  .rhizome-detail{
+    position:absolute; left:12px; bottom:12px; max-width:34ch; padding:0; background:transparent; border:none;
+    z-index:3;
+  }
+  .rhizome-detail .detail-label{font-size:10px; text-transform:uppercase; letter-spacing:.16em; color:var(--tag); margin-bottom:8px;}
   .rhizome-detail h4{margin:0 0 8px; font-size:19px; font-weight:500;}
   .rhizome-detail p{margin:0 0 10px; color:#ddd5c8; font-size:15px;}
-  .rhizome-detail .meta{font-size:11px; text-transform:uppercase; letter-spacing:.14em; color:var(--muted); margin-bottom:10px;}
-  @media (max-width:860px){ .rhizome-card{grid-template-columns:1fr;} .rhizome-detail{position:static;} }
+  .rhizome-detail .meta{font-size:10px; text-transform:uppercase; letter-spacing:.14em; color:var(--muted); margin-bottom:8px;}
+  @media (max-width:860px){ .rhizome-card{min-height:720px;} .rhizome-canvas{min-height:700px;} .rhizome-detail{position:static; max-width:none; margin-top:12px;} }
 </style>
 </head>
 <body>
@@ -321,9 +320,9 @@
   const detail = document.getElementById('rhizomeDetail');
   const svgNS = 'http://www.w3.org/2000/svg';
   const groupCenters = {
-    'Ontological Analysis': { x: 30, y: 55 },
-    'Historical and Contextual Analysis': { x: 72, y: 55 },
-    'Visual and Aesthetic Representation': { x: 50, y: 26 }
+    'Ontological Analysis': { x: 24, y: 24 },
+    'Historical and Contextual Analysis': { x: 76, y: 50 },
+    'Visual and Aesthetic Representation': { x: 24, y: 78 }
   };
 
   function renderRhizome() {
@@ -347,14 +346,15 @@
       hub.style.top = `${center.y}%`;
       canvas.appendChild(hub);
 
-      const radius = nodes.length > 7 ? 24 : nodes.length > 4 ? 28 : 32;
+      const radius = nodes.length > 7 ? 34 : nodes.length > 4 ? 38 : 44;
       const angleStep = (Math.PI * 2) / nodes.length;
       const angleOffset = group === 'Historical and Contextual Analysis' ? Math.PI / 6 : group === 'Visual and Aesthetic Representation' ? -Math.PI / 6 : 0;
 
       nodes.forEach((node, index) => {
         const angle = angleOffset + index * angleStep;
-        const x = center.x + Math.cos(angle) * radius;
-        const y = center.y + Math.sin(angle) * radius * 0.75;
+        const radiusOffset = index % 2 === 0 ? 4 : -4;
+        const x = center.x + Math.cos(angle) * (radius + radiusOffset);
+        const y = center.y + Math.sin(angle) * ((radius + radiusOffset) * 0.8);
 
         const line = document.createElementNS(svgNS, 'line');
         line.setAttribute('class', 'rhizome-line');
@@ -381,10 +381,10 @@
           const target = nodes.findIndex((entry) => entry.id === candidate.id);
           const angleSource = angleOffset + source * angleStep;
           const angleTarget = angleOffset + target * angleStep;
-          const x1 = center.x + Math.cos(angleSource) * radius;
-          const y1 = center.y + Math.sin(angleSource) * radius * 0.75;
-          const x2 = center.x + Math.cos(angleTarget) * radius;
-          const y2 = center.y + Math.sin(angleTarget) * radius * 0.75;
+          const x1 = center.x + Math.cos(angleSource) * (radius + (source % 2 === 0 ? 4 : -4));
+          const y1 = center.y + Math.sin(angleSource) * ((radius + (source % 2 === 0 ? 4 : -4)) * 0.8);
+          const x2 = center.x + Math.cos(angleTarget) * (radius + (target % 2 === 0 ? 4 : -4));
+          const y2 = center.y + Math.sin(angleTarget) * ((radius + (target % 2 === 0 ? 4 : -4)) * 0.8);
           const line = document.createElementNS(svgNS, 'line');
           line.setAttribute('class', 'rhizome-line is-strong');
           line.setAttribute('x1', x1);
