@@ -339,15 +339,30 @@
     'Historical and Contextual Analysis': { x: 76, y: 50 },
     'Visual and Aesthetic Representation': { x: 24, y: 78 }
   };
-
   function renderRhizome() {
-    canvas.querySelectorAll('.rhizome-node, .rhizome-hub, .rhizome-line').forEach((el) => el.remove());
+    canvas.querySelectorAll('.rhizome-node, .rhizome-hub, .rhizome-line, .cluster-poly, .floating-text').forEach((el) => el.remove());
 
     const svg = document.createElementNS(svgNS, 'svg');
     svg.setAttribute('class', 'rhizome-svg');
     svg.setAttribute('viewBox', '0 0 100 100');
     svg.setAttribute('preserveAspectRatio', 'none');
     canvas.appendChild(svg);
+
+    // create several floating intro text blocks scattered around the plateau
+    const introChunks = [
+      'This plateau behaves like a rhizome rather than a hierarchy: each analysis node is treated as a point of entry, connected first to the relevant analysis plateau.',
+      'Points connect laterally across shared ontological operators and typologies, growing non-linearly rather than in a single chain.',
+      'Click any node to reveal its summary. The annotation will pop from the node and follow the pointer for direct inspection.'
+    ];
+    const introPositions = [{x:8,y:8},{x:68,y:12},{x:12,y:56}];
+    introChunks.forEach((txt, i) => {
+      const d = document.createElement('div');
+      d.className = 'floating-text';
+      d.style.left = `${introPositions[i].x}%`;
+      d.style.top = `${introPositions[i].y}%`;
+      d.textContent = txt;
+      canvas.appendChild(d);
+    });
 
     const groups = [...new Set(rhizomeNodes.map((node) => node.plateau))];
 
@@ -365,11 +380,16 @@
       const angleStep = (Math.PI * 2) / nodes.length;
       const angleOffset = group === 'Historical and Contextual Analysis' ? Math.PI / 6 : group === 'Visual and Aesthetic Representation' ? -Math.PI / 6 : 0;
 
+      // keep track of created node positions for cluster polygon
+      const polyPoints = [];
+
       nodes.forEach((node, index) => {
         const angle = angleOffset + index * angleStep;
         const radiusOffset = index % 2 === 0 ? 4 : -4;
         const x = center.x + Math.cos(angle) * (radius + radiusOffset);
         const y = center.y + Math.sin(angle) * ((radius + radiusOffset) * 0.8);
+
+        polyPoints.push({x,y});
 
         const line = document.createElementNS(svgNS, 'line');
         line.setAttribute('class', 'rhizome-line');
@@ -390,6 +410,25 @@
         canvas.appendChild(nodeEl);
       });
 
+      // draw a polygon around the cluster by expanding points slightly from centroid
+      if (polyPoints.length > 2) {
+        const cx = polyPoints.reduce((s,p)=>s+p.x,0)/polyPoints.length;
+        const cy = polyPoints.reduce((s,p)=>s+p.y,0)/polyPoints.length;
+        const expanded = polyPoints.map(p=>{
+          const vx = p.x - cx; const vy = p.y - cy; const len = Math.hypot(vx,vy)||1;
+          const scale = 1.12; return {x: cx + vx*scale, y: cy + vy*scale};
+        });
+        const poly = document.createElementNS(svgNS, 'polygon');
+        poly.setAttribute('class','cluster-poly');
+        poly.setAttribute('points', expanded.map(p=>`${p.x},${p.y}`).join(' '));
+        poly.setAttribute('fill','none');
+        poly.setAttribute('stroke','var(--line)');
+        poly.setAttribute('stroke-width','1');
+        poly.setAttribute('opacity','0.9');
+        svg.appendChild(poly);
+      }
+
+      // create strong connections between same-typology nodes
       nodes.forEach((node, index) => {
         const matching = nodes.filter((candidate) => candidate.typology === node.typology && candidate.id !== node.id);
         matching.forEach((candidate) => {
@@ -433,6 +472,12 @@
     const rect = canvas.getBoundingClientRect();
     const anchorX = event ? event.clientX - rect.left : rect.width * 0.5;
     const anchorY = event ? event.clientY - rect.top : rect.height * 0.5;
+    // place the callout immediately at the node's position so it 'pops' from it
+    detail.style.left = `${anchorX}px`;
+    detail.style.top = `${anchorY}px`;
+    // small initial scale/pop
+    detail.style.transform = 'translate(0,0) scale(1.02)';
+    // then animate toward the pointer target
     updateCalloutPosition(anchorX, anchorY);
   }
 
