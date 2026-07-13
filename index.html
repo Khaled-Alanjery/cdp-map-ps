@@ -3,312 +3,974 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Saydnaya — Precedent Study</title>
+<title>Precedent Study of Saydnaya</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,72,400;0,72,500;1,72,400&display=swap" rel="stylesheet">
 <style>
-  :root{ --bg:#ffffff; --ink:#000000; }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    background:var(--bg); color:var(--ink);
-    font-family:'Roboto', Arial, sans-serif;
-    line-height:1.5; -webkit-font-smoothing:antialiased;
-    overflow-x:hidden;
+    background:#2e2e2e;
+    color:#111;
+    font-family:'Newsreader', Georgia, serif;
+    line-height:1.55; -webkit-font-smoothing:antialiased;
   }
-  a{color:var(--ink); text-decoration-color:var(--ink); text-underline-offset:3px;}
-  a:hover{opacity:.6;}
+  a{color:#111; text-decoration-color:#111;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
 
-  header{padding:60px 24px 20px; max-width:640px;}
-  h1{font-weight:500; font-size:clamp(28px,4.5vw,44px); line-height:1.1; margin:0 0 12px;}
-  header p{color:var(--ink); opacity:.6; font-size:15px; font-style:italic; margin:0;}
+  #appFrame{position:relative; margin:10px; min-height:calc(100vh - 20px); display:flex; flex-direction:column; overflow:hidden;}
 
-  #canvas{position:relative; width:100%; overflow:visible;}
+  header{order:1; background:rgba(214,214,214,.72); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); color:#1a1a1a; margin:10px; padding:20px; border-radius:40px; position:relative; border:1px solid rgba(255,255,255,.8);}
+  header h1{font-size:clamp(22px,3.6vw,30px); font-weight:500; margin:0 0 10px; line-height:1.1; color:#1a1a1a;}
+  header h1 .proj{font-style:italic;}
+  header p{font-size:14px; margin:0 0 9px; color:#3a3a3a;}
+  header p.method{color:#5a5a5a; font-size:12.5px;}
+  .page-wrap{perspective:1400px;}
+  .page-content{transition:transform .35s ease, opacity .35s ease; transform-style:preserve-3d;}
+  .page-content.is-turning{transform:rotateY(85deg); opacity:0;}
+  .page-content h2{font-size:16px; font-weight:600; margin:0 0 10px; letter-spacing:.02em;}
+  .page-content h4{font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:#5a5a5a; margin:14px 0 4px;}
+  .page-content h4:first-child{margin-top:0;}
+  .page-content p, .page-content li{font-size:13px; color:#333; line-height:1.55; margin:0 0 8px;}
+  .page-content ul{margin:0; padding-left:18px;}
+  .page-content a{color:#1a1a1a;}
+  .page-content .bib-entry{font-size:12.5px; margin-bottom:9px; line-height:1.5;}
+  .page-nav{display:flex; align-items:center; justify-content:center; gap:14px; margin-top:14px; padding-top:12px; border-top:1px solid #bbb;}
+  .page-btn{
+    font-family:'IBM Plex Mono',monospace; font-size:16px; width:28px; height:28px; border-radius:50%;
+    background:#1a1a1a; color:#fff; border:none; cursor:pointer; line-height:1;
+  }
+  .page-btn:hover{background:#000;}
+  .page-indicator{font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#5a5a5a; letter-spacing:.04em;}
+  .resize-handle{display:none;}
+  header, .filter-block, .filter-face-back, #detail{scrollbar-width:none; -ms-overflow-style:none;}
+  header:hover, .filter-block:hover, .filter-face-back:hover, #detail:hover{scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.55) transparent;}
+  header::-webkit-scrollbar, .filter-block::-webkit-scrollbar, .filter-face-back::-webkit-scrollbar, #detail::-webkit-scrollbar{width:3px;}
+  header::-webkit-scrollbar-track, .filter-block::-webkit-scrollbar-track, .filter-face-back::-webkit-scrollbar-track, #detail::-webkit-scrollbar-track{background:transparent;}
+  header::-webkit-scrollbar-thumb, .filter-block::-webkit-scrollbar-thumb, .filter-face-back::-webkit-scrollbar-thumb, #detail::-webkit-scrollbar-thumb{background:transparent; border-radius:3px;}
+  header:hover::-webkit-scrollbar-thumb, .filter-block:hover::-webkit-scrollbar-thumb, .filter-face-back:hover::-webkit-scrollbar-thumb, #detail:hover::-webkit-scrollbar-thumb{background:rgba(255,255,255,.55);}
+
+  #rhizome{order:2; position:relative; margin:10px; border-radius:40px; background:#3f3f3f; flex:1; min-height:420px; overflow:hidden; display:flex; align-items:center; justify-content:center; border:2px solid #3f3f3f; transition:border-color .3s ease;}
+  #rhizome.is-adjusting{border-color:#888;}
+  #canvasViewport{position:relative; width:100%; height:100%; overflow:hidden; margin:0 auto;}
+  #canvas{position:absolute; top:0; left:0; transform-origin:top left;}
   #canvasSvg{position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0;}
-  .line{stroke:var(--ink); stroke-width:.25; fill:none; opacity:.55;}
-  .thread{stroke:var(--ink); stroke-width:.25; fill:none; stroke-dasharray:4 4; opacity:.55;}
+  .line{stroke:#999; stroke-width:.5; fill:none; opacity:.4; transition:opacity .25s;}
+  .thread{stroke:#999; stroke-width:.5; fill:none; stroke-dasharray:3 4; opacity:.45; transition:opacity .25s;}
+
+  #filters{order:3; display:flex; flex-direction:column; gap:10px; margin:10px;}
+  .platform-link{
+    order:4; align-self:flex-end; margin:10px;
+    font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.04em; text-transform:uppercase;
+    color:#fff; background:#1a1a1a; text-decoration:none; font-weight:600;
+    padding:14px 24px; border-radius:24px;
+  }
+  .platform-link:hover{background:#000;}
+  .filter-block{background:rgba(214,214,214,.72); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); color:#1a1a1a; border-radius:40px; padding:24px 28px; position:relative; perspective:1400px; overflow:visible; border:1px solid rgba(255,255,255,.8);}
+  .card-inner{position:relative; width:100%; height:100%; transition:transform .6s cubic-bezier(.4,.2,.2,1); transform-style:preserve-3d;}
+  .filter-block.is-flipped .card-inner{transform:rotateY(180deg);}
+  .filter-face{backface-visibility:hidden; -webkit-backface-visibility:hidden;}
+  .filter-face-back{
+    position:absolute; inset:0; padding:24px 28px 8px; border-radius:40px;
+    background:rgba(214,214,214,.72); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    overflow-y:auto; transform:rotateY(180deg);
+  }
+  .glossary-btn{
+    font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+    background:#4a4a4a; color:#fff; border:none; border-radius:20px; padding:5px 12px; cursor:pointer;
+  }
+  .glossary-entry{margin-bottom:10px;}
+  .glossary-entry:last-child{margin-bottom:0;}
+  .glossary-entry .g-term{font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px;}
+  .glossary-entry .g-prop{font-weight:600;}
+  .glossary-entry .g-select{font-weight:400; color:#5a5a5a;}
+  .glossary-entry .g-def{font-size:13px; color:#3a3a3a; line-height:1.5;}
+  .drag-handle{display:none;}
+  .filter-block h3{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+    color:#5a5a5a; margin:0 0 12px; display:flex; align-items:center; justify-content:space-between; gap:8px;
+  }
+  .prop-row{display:flex; flex-wrap:wrap; gap:10px 8px; align-items:center; margin-bottom:10px;}
+  .prop-row:last-child{margin-bottom:0;}
+  .prop-label{font-family:'IBM Plex Mono',monospace; font-size:11px; color:#1a1a1a; min-width:170px; letter-spacing:.02em;}
+  .chip{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; padding:6px 12px;
+    background:#f2f2f2; color:#1a1a1a; border:1px solid #aaa; border-radius:20px;
+    cursor:pointer; letter-spacing:.01em; transition:background .12s, color .12s;
+  }
+  .chip:hover{background:#c8c8c8;}
+  .chip.is-active{background:#4a4a4a; color:#fff; border-color:#4a4a4a;}
+  #keywordChips{display:flex; flex-wrap:wrap; gap:7px;}
+  #keywordChips .chip{font-size:10.5px; padding:4px 10px; opacity:.75;}
+  #keywordChips .chip.is-active{opacity:1;}
+  #keywordSearch{
+    display:block; width:100%; font-family:'IBM Plex Mono',monospace; font-size:13px;
+    padding:14px 16px; margin-bottom:12px; border:1px solid #aaa; border-radius:20px;
+    background:#f2f2f2; color:#1a1a1a;
+  }
+  #keywordSearch:focus{outline:none; border-color:#4a4a4a;}
+  .clear-btn{font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-decoration:underline; cursor:pointer; color:#5a5a5a; background:none; border:none; padding:0; margin-left:6px;}
+
+
+  @media (min-width:900px){
+    #appFrame{display:block;}
+    header{position:absolute; top:10px; left:10px; width:380px; margin:0; z-index:5; cursor:default; overflow-x:hidden; overflow-y:auto; resize:none;}
+    #rhizome{position:absolute; inset:10px; margin:0; z-index:1;}
+    #filters{display:contents;}
+    .filter-block{position:absolute; width:280px; margin:0; z-index:5; overflow-x:hidden; overflow-y:auto;}
+    .filter-block:nth-of-type(1){top:10px; right:10px;}
+    .filter-block:nth-of-type(2){top:250px; right:10px;}
+    .platform-link{position:absolute; bottom:4px; right:4px; margin:0; z-index:6;}
+    .drag-handle{
+      display:block; width:56px; height:5px; margin:-6px auto 18px auto; cursor:move;
+      background:#9a9a9a; border-radius:3px;
+    }
+    .drag-handle .dot{display:none;}
+    .resize-handle{
+      display:block; position:absolute; width:28px; height:28px; z-index:7;
+    }
+    .resize-handle[data-corner="tl"]{top:14px; left:14px; cursor:nwse-resize;}
+    .resize-handle[data-corner="tr"]{top:14px; right:14px; cursor:nesw-resize;}
+    .resize-handle[data-corner="bl"]{bottom:14px; left:14px; cursor:nesw-resize;}
+    .resize-handle[data-corner="br"]{bottom:14px; right:14px; cursor:nwse-resize;}
+    .resize-handle::after{
+      content:''; position:absolute; top:50%; left:50%; width:9px; height:9px; border-radius:50%;
+      background:#fff; transform:translate(-50%,-50%); opacity:0; transition:opacity .15s;
+    }
+    .resize-handle:hover::after{opacity:1;}
+  }
 
   .blob{
     position:absolute; transform:translate(-50%,-50%);
-    background:var(--bg); border:1px solid var(--ink); color:var(--ink);
-    padding:26px 46px; max-width:260px; font-size:14.5px; line-height:1.3;
-    text-align:center; cursor:pointer; font-family:'Roboto', Arial, sans-serif;
-    border-radius:14% 86% 82% 88% / 70% 62% 46% 38%;
-    animation-timing-function:ease-in-out; animation-iteration-count:infinite;
-    z-index:2;
+    background:#8a8a8a; border:1px solid #aaa; color:#fff;
+    padding:10px 14px; max-width:130px; font-size:10.5px; line-height:1.25;
+    text-align:center; cursor:pointer; font-family:'IBM Plex Mono',monospace;
+    z-index:2; transition:opacity .25s ease, transform .32s cubic-bezier(.34,1.56,.64,1), left .2s ease, top .2s ease;
+    border-radius:56% 44% 52% 48% / 42% 58% 40% 60%;
   }
-  .blob:nth-child(6n+2){border-radius:86% 14% 88% 82% / 62% 70% 38% 46%; padding:26px 30px 26px 54px;}
-  .blob:nth-child(6n+3){border-radius:82% 88% 14% 86% / 46% 38% 70% 62%; padding:46px 34px 22px;}
-  .blob:nth-child(6n+4){border-radius:88% 82% 86% 14% / 38% 46% 62% 70%; padding:22px 34px 46px;}
-  .blob:nth-child(6n+5){border-radius:20% 80% 74% 90% / 66% 58% 40% 34%; padding:26px 50px 26px 32px;}
-  .blob:nth-child(6n+0){border-radius:80% 20% 90% 74% / 58% 66% 34% 40%; padding:26px 32px 26px 50px;}
-  .blob:hover{border-width:1.5px;}
-
-  @media (prefers-reduced-motion: no-preference){
-    .crawl-a{animation-name:crawlA;}
-    .crawl-b{animation-name:crawlB;}
-    .crawl-c{animation-name:crawlC;}
-  }
-  /* each node wanders and curls but is always tethered back to its anchor point — never drifts free */
-  @keyframes crawlA{
-    0%{transform:translate(-50%,-50%) translate(0,0) rotate(0deg) scale(1);}
-    28%{transform:translate(-50%,-50%) translate(5px,-6px) rotate(3deg) scale(1.04);}
-    58%{transform:translate(-50%,-50%) translate(-4px,-2px) rotate(-2deg) scale(1.06);}
-    82%{transform:translate(-50%,-50%) translate(3px,4px) rotate(1deg) scale(1.02);}
-    100%{transform:translate(-50%,-50%) translate(0,0) rotate(0deg) scale(1);}
-  }
-  @keyframes crawlB{
-    0%{transform:translate(-50%,-50%) translate(0,0) rotate(0deg) scale(1);}
-    30%{transform:translate(-50%,-50%) translate(-5px,5px) rotate(-3deg) scale(1.03);}
-    62%{transform:translate(-50%,-50%) translate(2px,3px) rotate(2deg) scale(1.05);}
-    85%{transform:translate(-50%,-50%) translate(-3px,-4px) rotate(-1deg) scale(1.02);}
-    100%{transform:translate(-50%,-50%) translate(0,0) rotate(0deg) scale(1);}
-  }
-  @keyframes crawlC{
-    0%{transform:translate(-50%,-50%) translate(0,0) rotate(0deg) scale(1);}
-    26%{transform:translate(-50%,-50%) translate(4px,6px) rotate(2deg) scale(1.05);}
-    56%{transform:translate(-50%,-50%) translate(-4px,2px) rotate(-2deg) scale(1.02);}
-    88%{transform:translate(-50%,-50%) translate(3px,-5px) rotate(1deg) scale(1.06);}
-    100%{transform:translate(-50%,-50%) translate(0,0) rotate(0deg) scale(1);}
-  }
-
-  .floater{position:absolute; max-width:30ch; font-size:14.5px; color:var(--ink); line-height:1.5; z-index:5; font-family:'Roboto', Arial, sans-serif;}
-  .floater a{font-family:'Roboto', Arial, sans-serif; font-size:12px;}
-
-  #bibliography{position:relative; width:100%;}
+  .blob:nth-child(6n+2){border-radius:44% 56% 60% 40% / 55% 45% 60% 40%;}
+  .blob:nth-child(6n+3){border-radius:62% 38% 42% 58% / 40% 60% 44% 56%;}
+  .blob:nth-child(6n+4){border-radius:46% 54% 40% 60% / 58% 42% 55% 45%;}
+  .blob:nth-child(6n+5){border-radius:54% 46% 58% 42% / 36% 64% 42% 58%;}
+  .blob:nth-child(6n+0){border-radius:38% 62% 55% 45% / 62% 38% 56% 44%;}
+  .blob:hover{border-width:1.5px; background:#9a9a9a; transform:translate(-50%,-50%) scale(1.15); z-index:4;}
+  .blob.is-dim{opacity:.12; pointer-events:none;}
+  .blob.is-match{transform:translate(-50%,-50%) scale(1.4); z-index:5; border-width:1.5px; border-color:#fff; background:#e8e8e8; color:#1a1a1a; box-shadow:0 0 0 4px rgba(255,255,255,.9);}
 
   #overlay{
-    position:fixed; inset:0; background:rgba(255,255,255,.35); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    position:fixed; inset:0; background:rgba(20,20,20,.5); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
     opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:40;
   }
   #overlay.is-on{opacity:1; pointer-events:auto;}
-
   #detail{
-    position:fixed; background:#000; color:#fff; padding:22px 26px; max-width:340px;
-    font-family:'Roboto', Arial, sans-serif; opacity:0; pointer-events:none; z-index:41;
-    transform:translate(-8px,-8px); transition:opacity .2s ease;
+    position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+    background:#333; color:#fff; padding:28px 32px; max-width:460px; width:90%;
+    max-height:85vh; overflow-y:auto; border-radius:40px;
+    font-family:'IBM Plex Mono',monospace; opacity:0; pointer-events:none; z-index:41;
+    transition:opacity .2s ease;
   }
-  #detail.is-on{opacity:1;}
-  #detail .plateau{font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:#bbb; margin-bottom:10px;}
-  #detail h4{margin:0 0 8px; font-size:17px; font-weight:500; font-family:'Roboto', Arial, sans-serif;}
-  #detail .typ{font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:#888; margin-bottom:10px;}
-  #detail p{margin:0; font-size:13.5px; line-height:1.5; font-family:'Roboto', Arial, sans-serif; color:#fff;}
+  #detail.is-on{opacity:1; pointer-events:auto;}
+  #detail .tags{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;}
+  #detail .tag{font-size:10px; letter-spacing:.08em; text-transform:uppercase; border:1px solid #666; color:#ccc; padding:3px 8px; border-radius:20px;}
+  #detail h4{margin:0 0 14px; font-size:20px; font-weight:500; font-family:'Newsreader',serif; color:#fff;}
+  #detail .field{margin-bottom:12px;}
+  #detail .field-label{font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:#888; margin-bottom:3px;}
+  #detail .field-value{font-size:13.5px; font-family:'Newsreader',serif; color:#fff; line-height:1.5;}
+  #detail .close-btn{
+    position:absolute; top:14px; right:16px; background:none; border:none; color:#999;
+    font-family:'IBM Plex Mono',monospace; font-size:12px; cursor:pointer;
+  }
+  .link-window{display:block; border:1px solid #444; text-decoration:none; overflow:hidden; margin-top:4px; border-radius:20px;}
+  .link-window-bar{background:#222; display:flex; align-items:center; gap:5px; padding:6px 8px;}
+  .link-window-bar .dot{width:6px; height:6px; border-radius:50%; background:#777; display:inline-block;}
+  .link-window-host{font-family:'IBM Plex Mono',monospace; font-size:9.5px; color:#aaa; margin-left:4px; letter-spacing:.02em;}
+  .link-window img{width:100%; display:block; filter:grayscale(1) contrast(1.05); background:#333;}
+  .link-window:hover .link-window-bar{background:#111;}
+  .observer-btn{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; padding:9px 16px; margin-top:4px;
+    background:#fff; color:#111; border:1px solid #fff; border-radius:20px; cursor:pointer; letter-spacing:.02em;
+  }
+  .observer-btn:hover{background:#ccc;}
+  .observer-status{font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#999; margin-top:8px;}
+  .observer-video{width:100%; margin-top:10px; border:1px solid #444; border-radius:20px; filter:grayscale(1) contrast(1.1);}
 
-  footer{padding:50px 24px 80px; font-size:11px; color:var(--ink); opacity:.5; font-family:'Roboto', Arial, sans-serif;}
 </style>
 </head>
 <body>
 
-<header>
-  <h1>Saydnaya: Inside a Syrian Torture Prison</h1>
-  <p>A precedent study of Forensic Architecture and Amnesty International's 2016 spatial and acoustic reconstruction of Saydnaya military prison, Syria. No photographs exist — reconstructed entirely from testimony.</p>
-</header>
+<div id="appFrame">
 
-<div id="canvas"><svg id="canvasSvg" preserveAspectRatio="none"></svg></div>
-<div id="bibliography"></div>
+  <header id="tileHeader">
+    <div class="drag-handle"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+    <div class="page-wrap"><div class="page-content" id="titlePageContent"></div></div>
+    <div class="page-nav">
+      <button class="page-btn" id="pagePrev">‹</button>
+      <span class="page-indicator" id="pageIndicator"></span>
+      <button class="page-btn" id="pageNext">›</button>
+    </div>
+    <div class="resize-handle" data-corner="tl"></div>
+      <div class="resize-handle" data-corner="tr"></div>
+      <div class="resize-handle" data-corner="bl"></div>
+      <div class="resize-handle" data-corner="br"></div>
+  </header>
+
+  <section id="rhizome">
+    <div id="canvasViewport"><div id="canvas"><svg id="canvasSvg"></svg></div></div>
+  </section>
+
+  <section id="filters">
+    <div class="filter-block" id="filterTile1">
+      <div class="drag-handle"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+      <div class="card-inner">
+        <div class="filter-face filter-face-front">
+          <h3>Filter by attribute <span><button class="glossary-btn" id="glossaryToggle">Glossary</button> <button class="clear-btn" id="clearProps">clear</button></span></h3>
+          <div id="propertyFilters"></div>
+        </div>
+        <div class="filter-face filter-face-back" id="glossaryBack">
+          <h3>Glossary <span><button class="glossary-btn" id="glossaryToggleBack">Filter</button></span></h3>
+          <div id="glossaryContent"></div>
+        </div>
+      </div>
+      <div class="resize-handle" data-corner="tl"></div>
+      <div class="resize-handle" data-corner="tr"></div>
+      <div class="resize-handle" data-corner="bl"></div>
+      <div class="resize-handle" data-corner="br"></div>
+    </div>
+    <div class="filter-block" id="filterTile2">
+      <div class="drag-handle"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+      <h3>Filter by keyword <button class="clear-btn" id="clearKeywords">clear</button></h3>
+      <input type="text" id="keywordSearch" placeholder="Type to search any node…" autocomplete="off" />
+      <div id="keywordChips"></div>
+      <div class="resize-handle" data-corner="tl"></div>
+      <div class="resize-handle" data-corner="tr"></div>
+      <div class="resize-handle" data-corner="bl"></div>
+      <div class="resize-handle" data-corner="br"></div>
+    </div>
+  </section>
+
+  <a class="platform-link" href="https://saydnaya.amnesty.org/?kind=explore" target="_blank" rel="noopener">Go to Platform ↗</a>
+
+
+</div>
 
 <div id="overlay"></div>
 <aside id="detail"></aside>
 
-<footer>Computational Design Workflows — Precedent Study — Khaled, Columbia GSAPP</footer>
-
 <script>
+  // ---------- Title tile: paginated flip-book ----------
+  const TITLE_PAGES = [
+    {
+      title: null,
+      html: `
+        <h1>Precedent Study of <span class="proj">Saydnaya</span></h1>
+        <p>Forensic Architecture and Amnesty International's 2016 spatial and acoustic reconstruction of Saydnaya military prison, Syria. Built entirely from witness testimony, since no photographs of the prison's interior exist.</p>
+        <p class="method">This study treats the project as a single plateau rather than a set of separate sections. Each node in the rhizome is drawn directly from the analysis database: classified by which attribute it runs through, whether it acts as an intermediary or a mediator, and what kind of actant it is (human, non-human, or force), following Gilles Deleuze and Felix Guattari's "Rhizome Theory" and Latour's "Actor-Network Theory".</p>
+      `
+    },
+    {
+      title: 'Methodology',
+      html: `
+        <h2>Project's Methodology</h2>
+        <h4>Software / modeling approach</h4>
+        <p>Forensic Architecture built an initial 3D model from satellite imagery and prior written interviews (Dec 2015–Feb 2016), then refined it interactively with five survivors in Istanbul (April 2016) using architect-guided 3D modeling software as each witness described rooms, doors, and remembered objects.</p>
+        <h4>Acoustic method</h4>
+        <p>Lawrence Abu Hamdan led the collection of "ear-witness testimony": tone-matching to decibel levels, and "echo profiling," playing reverberations and matching them to remembered sounds, to determine room and corridor size where sight was impossible.</p>
+        <h4>Data provenance</h4>
+        <p>Three sources converge: architectural/spatial testimony, satellite imagery, and acoustic memory.</p>
+        <h4>Theoretical method</h4>
+        <p>Weizman and Keenan's "forensic aesthetics" (<em>Mengele's Skull</em>, 2012), treating how evidence is sensed and presented as inseparable from the evidence itself.</p>
+      `
+    },
+    {
+      title: 'Rhetorical Analysis',
+      html: `
+        <h2>Rhetorical Analysis</h2>
+        <h4>Central argument</h4>
+        <p>The Syrian state's refusal of independent monitors is itself evidence of what it is hiding. Testimony, usually treated as "soft" evidence, is presented with the same rigor as architectural and acoustic data.</p>
+        <h4>Persuasive mechanism</h4>
+        <p>The two navigation modes (by location / by witness) refuse a single authoritative narrative, a cartography, not a tracing.</p>
+        <h4>Why "critical"</h4>
+        <p>The site argues by exposing its own evidentiary method, how the model was built, how sound was used, rather than by implying a conclusion outright.</p>
+        <h4>Procedural rhetoric</h4>
+        <p>Following Bogost, the drag-to-look interface persuades through enacted disorientation; you navigate the blindness the witnesses describe, rather than just reading about it.</p>
+      `
+    },
+    {
+      title: "Wider Practice",
+      html: `
+        <h2>Author's Wider Practice</h2>
+        <p>Saydnaya (2016) sits early in Forensic Architecture's now 76+ investigations across 45+ countries, partnering with Amnesty International, the UN Special Rapporteur on Counter-Terrorism and Human Rights, Human Rights Watch, and Bellingcat.</p>
+        <h4>Methodological throughline</h4>
+        <p>Combining "warm data" (testimony) with "cold data" (satellite imagery, acoustic modeling) recurs across FA's catalog. Saydnaya is close to a paradigm case, pushed further toward testimony than most FA projects since the site has zero available photographic "cold data."</p>
+        <h4>Theoretical throughline</h4>
+        <p>Weizman describes forensic architecture as an "archaeology of the very recent past" and as building "new forums" for judgment; Saydnaya's public interactive site is a literal forum, not just a report.</p>
+      `
+    },
+    {
+      title: 'Personal Assessment',
+      html: `
+        <h2>Personal Assessment</h2>
+        <h4>Appraisal / Criticism</h4>
+        <p>Saydnaya succeeds specifically because it treats absence (no photographs) as the generative tension rather than an obstacle; the whole method stems from that constraint. Refusing to rank testimony below "harder" evidence types is a real epistemological argument, not just a workaround. Though the site's reliance on external services (video, embeds) is a reminder that these evidentiary interactive elements are fragile as long-term historical records.</p>
+      `
+    },
+    {
+      title: 'Bibliography',
+      html: `
+        <h2>Bibliography</h2>
+        <div class="bib-entry">Forensic Architecture, project page for <em>Saydnaya</em>. <a href="https://forensic-architecture.org/investigation/saydnaya" target="_blank" rel="noopener">forensic-architecture.org/investigation/saydnaya</a></div>
+        <div class="bib-entry">Amnesty International, "Explore Saydnaya." <a href="https://saydnaya.amnesty.org/?kind=explore" target="_blank" rel="noopener">saydnaya.amnesty.org</a></div>
+        <div class="bib-entry">Amnesty International, "Methodology," Explore Saydnaya. <a href="https://saydnaya.amnesty.org/en/methodology.html" target="_blank" rel="noopener">saydnaya.amnesty.org/en/methodology.html</a></div>
+        <div class="bib-entry">Amnesty International, "About," Explore Saydnaya. <a href="https://saydnaya.amnesty.org/en/about.html" target="_blank" rel="noopener">saydnaya.amnesty.org/en/about.html</a></div>
+        <div class="bib-entry">Amnesty International, <em>Human Slaughterhouse: Mass Hangings and Extermination at Saydnaya Prison, Syria</em> (Feb. 2017). <a href="https://www.amnesty.org/en/documents/mde24/5415/2017/en/" target="_blank" rel="noopener">amnesty.org</a></div>
+        <div class="bib-entry">Lawrence Abu Hamdan, project note on <em>Saydnaya</em>. <a href="http://lawrenceabuhamdan.com/saydnaya" target="_blank" rel="noopener">lawrenceabuhamdan.com/saydnaya</a></div>
+        <div class="bib-entry">Earshot, "Saydnaya: Inside a Syrian torture prison." <a href="https://earshot.ngo/investigations/saydnaya-inside-a-syrian-torture-prison" target="_blank" rel="noopener">earshot.ngo</a></div>
+        <div class="bib-entry">ArchDaily, "Forensic Architecture Digitally Reconstruct Secret Syrian Torture Prison." <a href="https://www.archdaily.com/793480/forensic-architecture-digitally-reconstruct-secret-syrian-torture-prison-from-the-memories-of-survivors" target="_blank" rel="noopener">archdaily.com</a></div>
+        <div class="bib-entry">Dezeen, "Forensic Architecture digitally reconstructs model of Syrian prison." <a href="https://www.dezeen.com/2016/08/19/forensic-architecture-digital-reconstruction-saydnaya-inside-syrian-torture-prison/" target="_blank" rel="noopener">dezeen.com</a></div>
+        <div class="bib-entry">Fast Company, "How Forensic Architecture Revealed Details Of A Secret Military Prison In Syria." <a href="https://www.fastcompany.com/3068329/how-forensic-architecture-revealed-details-of-a-secret-military-priso" target="_blank" rel="noopener">fastcompany.com</a></div>
+        <div class="bib-entry">MIT Open Documentary Lab, Docubase entry: <em>Saydnaya: Inside a Syrian Torture Prison</em>. <a href="https://docubase.mit.edu/project/saydnaya-inside-a-syrian-torture-prison/" target="_blank" rel="noopener">docubase.mit.edu</a></div>
+        <div class="bib-entry">Goldsmiths, University of London, "Syrian torture survivors rebuild brutal Saydnaya Prison online." <a href="https://www.gold.ac.uk/news/explore-saydnaya/" target="_blank" rel="noopener">gold.ac.uk</a></div>
+        <div class="bib-entry">Weizman, Eyal and Thomas Keenan. <em>Mengele's Skull: The Advent of a Forensic Aesthetics</em>. Sternberg Press, 2012.</div>
+        <div class="bib-entry">Wikipedia, "Sednaya Prison." <a href="https://en.wikipedia.org/wiki/Sednaya_Prison" target="_blank" rel="noopener">en.wikipedia.org/wiki/Sednaya_Prison</a></div>
+        <div class="bib-entry">Al Jazeera, "Syria hanged 13,000 in Saydnaya prison: Amnesty." <a href="https://www.aljazeera.com/news/2017/2/7/syria-hanged-13000-in-saydnaya-prison-amnesty" target="_blank" rel="noopener">aljazeera.com</a></div>
+      `
+    }
+  ];
+
+  let currentPage = 0;
+  const titlePageContent = document.getElementById('titlePageContent');
+  const pageIndicator = document.getElementById('pageIndicator');
+  function renderPage(instant) {
+    const go = () => {
+      titlePageContent.innerHTML = TITLE_PAGES[currentPage].html;
+      pageIndicator.textContent = `${currentPage + 1} / ${TITLE_PAGES.length}`;
+      titlePageContent.classList.remove('is-turning');
+    };
+    if (instant) { go(); return; }
+    titlePageContent.classList.add('is-turning');
+    setTimeout(go, 220);
+  }
+  document.getElementById('pagePrev').addEventListener('click', () => {
+    currentPage = (currentPage - 1 + TITLE_PAGES.length) % TITLE_PAGES.length;
+    renderPage();
+  });
+  document.getElementById('pageNext').addEventListener('click', () => {
+    currentPage = (currentPage + 1) % TITLE_PAGES.length;
+    renderPage();
+  });
+  renderPage(true);
+
   const nodes = [
-    { id:'witness', label:'Witness testimony transcripts', plateau:'Ontological analysis', typology:'Attribute', summary:'Interviews conducted in Istanbul in April 2016.' },
-    { id:'acoustic', label:'Acoustic reconstruction', plateau:'Ontological analysis', typology:'Attribute', summary:'Recordings and reconstructed soundscape used as spatial evidence.' },
-    { id:'verification', label:'Verification operator', plateau:'Ontological analysis', typology:'Operator', summary:'Cross-references multiple witness accounts into one spatially consistent model.' },
-    { id:'models', label:'3D reconstruction models', plateau:'Ontological analysis', typology:'Attribute', summary:'Architectural reconstruction models of cells, corridors, and stairwells.' },
-    { id:'modes', label:'Web interface modes', plateau:'Ontological analysis', typology:'Attribute', summary:'Exploration structured by location and by witness.' },
-    { id:'constraint', label:'Constraint-as-method operator', plateau:'Ontological analysis', typology:'Operator', summary:'Uses blindfolded sensory deprivation as a generative reconstruction method.' },
-    { id:'sound-space', label:'Sound-to-space operator', plateau:'Ontological analysis', typology:'Operator', summary:'Translates memory of echo, footsteps, and commands into a navigable acoustic model.' },
-    { id:'campaign', label:'Campaign / petition object', plateau:'Ontological analysis', typology:'Attribute', summary:'Nested advocacy action and petition within the site.' },
-    { id:'bilingual', label:'Bilingual text layer', plateau:'Ontological analysis', typology:'Attribute', summary:'Arabic and English textual layer embedded in the interface.' },
-    { id:'credit', label:'Credit structure', plateau:'Ontological analysis', typology:'Attribute', summary:'Named credits for modelers, acoustic investigation, translators, and video or sound editors.' },
-    { id:'spatial', label:'Spatial context', plateau:'Historical and contextual analysis', typology:'Operator', summary:'Situated in the Syrian civil war and Saydnaya\u2019s absence of photographic record.' },
-    { id:'audience-node', label:'Observer / audience', plateau:'Historical and contextual analysis', typology:'Operator', summary:'Addresses legal observers, the public, and witnesses as co-observers and co-authors.' },
-    { id:'authorship', label:'Institutional authorship', plateau:'Historical and contextual analysis', typology:'Operator', summary:'Co-realized by Amnesty International and Forensic Architecture through interdisciplinary authorship.' },
-    { id:'financial', label:'Financial context', plateau:'Historical and contextual analysis', typology:'Operator', summary:'Funded by Amnesty International, the David and Elaine Potter Foundation, and the Sigrid Rausing Trust.' },
-    { id:'representational', label:'Representational medium', plateau:'Visual and aesthetic representation', typology:'Attribute', summary:'Low-poly, deliberately non-photographic 3D rendering substitutes for absent photographic evidence.' },
-    { id:'navigation', label:'Interface / navigation', plateau:'Visual and aesthetic representation', typology:'Operator', summary:'First-person drag-based exploration positions the viewer as an embodied visitor.' },
-    { id:'forensic', label:'Forensic aesthetic', plateau:'Visual and aesthetic representation', typology:'Attribute', summary:'Positioned between CAD documentation and courtroom-diagram literalism.' },
-    { id:'sensory', label:'Sensory register', plateau:'Visual and aesthetic representation', typology:'Operator', summary:'Sound is a primary representational medium; testimony fragments are embedded as spatial annotations.' },
-    { id:'linguistic', label:'Linguistic / textual layer', plateau:'Visual and aesthetic representation', typology:'Operator', summary:'The bilingual Arabic-English interface operates as a legitimacy and audience decision, not just accessibility.' },
-    { id:'genre', label:'Genre positioning', plateau:'Visual and aesthetic representation', typology:'Attribute', summary:'Sits between CAD/architectural documentation and courtroom-diagram literalism as part of the forensic aesthetic lineage.' }
+    { node:"1635 film-Istanbul", multiplicity:["Contextual Analysis"], typology:"Mediator", actant:"Force", summary:"Collaborator", url:"https://www.facebook.com/1635filmistanbul/" },
+    { node:"Credit Structure", multiplicity:["Ontological Analysis"], typology:"Intermediary", actant:"Non-Human", summary:"Named credits for modelers, acoustic investigation, translators, and video/sound editors.", url:"https://forensic-architecture.org/investigation/saydnaya" },
+    { node:"Sensory register", multiplicity:["Visual and Aesthetic Representation"], typology:"Mediator", actant:"Force", summary:"Sound is a primary representational medium; headphone use and acoustic testimony fragments are embedded as spatial annotations.", url:"https://saydnaya.amnesty.org/?kind=location&id=solitary-1" },
+    { node:"Constraint-As-Method", multiplicity:["Ontological Analysis"], typology:"Mediator", actant:"Non-Human", summary:"Uses blindfolded sensory deprivation as a generative reconstruction method.", url:"https://saydnaya.amnesty.org/en/methodology.html" },
+    { node:"Procedural Rhetoric", multiplicity:["Visual and Aesthetic Representation"], typology:"Mediator", actant:"Force", summary:"Bogost's argument that games and game-like interfaces persuade through the rules and processes enacted, not just through images or text, the theoretical basis for treating the site's game-like form as part of its argument.", url:"https://saydnaya.amnesty.org/?kind=location&id=reception" },
+    { node:"Web Interface Modes (Location/Witness)", multiplicity:["Ontological Analysis"], typology:"Intermediary", actant:"Non-Human", summary:"Exploration structured by location and by witness.", url:"https://saydnaya.amnesty.org/?kind=explore" },
+    { node:"Human Slaughterhouse Report", multiplicity:["Ontological Analysis"], typology:"Intermediary", actant:"Non-Human", summary:"Amnesty International's February 2017 follow-up report, based on 84 witness interviews, estimating 5,000\u201313,000 people extrajudicially executed by hanging at Saydnaya between September 2011 and December 2015.", url:"https://www.amnesty.org/en/documents/mde24/5415/2017/en/" },
+    { node:"Web Environment", multiplicity:["Ontological Analysis"], typology:"Intermediary", actant:"Non-Human", summary:"The overall interactive site itself \u2014 combining testimony, 3D and acoustic reconstruction, and campaign action into one navigable interface.", url:"https://saydnaya.amnesty.org/?kind=explore" },
+    { node:"Syrian Civil War", multiplicity:["Historical Analysis"], typology:"Mediator", actant:"Force", summary:"Situated in the Syrian civil war and Saydnaya's absence of photographic record.", url:"https://en.wikipedia.org/wiki/Syrian_civil_war" },
+    { node:"Forensic Architecture", multiplicity:["Contextual Analysis"], typology:"Mediator", actant:"Force", summary:"The London-based research agency (Goldsmiths, University of London) that led the architectural and acoustic reconstruction, in collaboration with Amnesty International.", url:"https://forensic-architecture.org" },
+    { node:"Interactive Documentary \u201cI-Doc\u201d", multiplicity:["Visual and Aesthetic Representation"], typology:"Intermediary", actant:"Force", summary:"Documentary-studies term for browser-based, navigable nonfiction media; a citable, less game-culture-coded frame for the site's interactive form than \"walking simulator.\"", url:"https://saydnaya.amnesty.org/?kind=location&id=group-cell-2" },
+    { node:"Testimony-to-3D Spatial Reconstruction", multiplicity:["Ontological Analysis"], typology:"Intermediary", actant:"Non-Human", summary:"Forensic practices such as testimony utilized for architectural reconstruction models of cells, corridors, and stairwells.", url:"https://saydnaya.amnesty.org/?kind=video&id=09" },
+    { node:"Torture in Saydnaya Prison (Project/Incident)", multiplicity:["Contextual Analysis"], typology:"Mediator", actant:"Non-Human", summary:"The specific pattern of torture, mass hanging, and extrajudicial execution carried out at Saydnaya since 2011 \u2014 the incident the whole reconstruction responds to.", url:"https://forensic-architecture.org/investigation/saydnaya" },
+    { node:"Saydnaya Torture Prison (Space)", multiplicity:["Contextual Analysis"], typology:"Mediator", actant:"Non-Human", summary:"The physical prison building and its internal spaces; cells, corridors, stairwells; as reconstructed from testimony.", url:"https://saydnaya.amnesty.org/en/saydnaya.html" },
+    { node:"Muted Color Pallet", multiplicity:["Visual and Aesthetic Representation"], typology:"Intermediary", actant:"Non-Human", summary:"A desaturated, low-contrast rendering register that reinforces the site's visual tone.", url:"https://saydnaya.amnesty.org/?kind=explore" },
+    { node:"Testimony-to-Sound Reconstruction", multiplicity:["Ontological Analysis"], typology:"Intermediary", actant:"Non-Human", summary:"Forensic practices such as testimony translate memory of echo, footsteps, and commands into a navigable acoustic model. Recordings and reconstructed soundscape used as spatial evidence.", url:"https://saydnaya.amnesty.org/?kind=video&id=11" },
+    { node:"\u201cWalking Simulator\u201d Aesthetic", multiplicity:["Visual and Aesthetic Representation"], typology:"Intermediary", actant:"Force", summary:"First-person, low-interactivity exploration genre (Gone Home, Dear Esther) repurposed here for evidentiary rather than narrative ends.", url:"https://saydnaya.amnesty.org/?kind=location&id=corridor" },
+    { node:"Architectural Representation Methods", multiplicity:["Visual and Aesthetic Representation"], typology:"Intermediary", actant:"Force", summary:"Conventions drawn from architectural drafting and CAD documentation used to render the reconstructed cells, corridors, and stairwells.", url:"https://forensic-architecture.org/investigation/saydnaya#resources" },
+    { node:"Cartographic Representation Methods", multiplicity:["Visual and Aesthetic Representation"], typology:"Intermediary", actant:"Force", summary:"Mapping conventions used to orient and situate the reconstructed spaces within the prison as a whole.", url:"https://forensic-architecture.org/investigation/saydnaya#resources" },
+    { node:"Textual Captions", multiplicity:["Ontological Analysis"], typology:"Intermediary", actant:"Non-Human", summary:"Captions such as \u201cGuards shortening their sticks\u201d and \u201cNo echo, cells full of people.\u201d", url:"https://saydnaya.amnesty.org/?kind=location&id=solitary-3" },
+    { node:"Drag-To-Look interface", multiplicity:["Ontological Analysis"], typology:"Mediator", actant:"Non-Human", summary:"Converts testimony into first-person movement through space.", url:"https://saydnaya.amnesty.org/?kind=location&id=corridor" },
+    { node:"Bilingual Text", multiplicity:["Ontological Analysis"], typology:"Intermediary", actant:"Non-Human", summary:"Arabic/English textual layer embedded in the interface.", url:"https://saydnaya.amnesty.org/?kind=explore" },
+    { node:"Co-Observer/Co-Author", multiplicity:["Contextual Analysis"], typology:"Mediator", actant:"Human", summary:"Addresses legal observers, the public, and witnesses as co-observers/co-authors.", url:null },
+    { node:"Forensic Aesthetic", multiplicity:["Visual and Aesthetic Representation"], typology:"Intermediary", actant:"Force", summary:"Sits between CAD/architectural documentation and courtroom-diagram literalism as part of the forensic aesthetic.", url:"https://forensic-architecture.org/investigation/saydnaya#resources" },
+    { node:"Saydnaya, Syria (Location)", multiplicity:["Contextual Analysis"], typology:"Intermediary", actant:"Non-Human", summary:"Situated in the Syrian civil war and Saydnaya's absence of photographic record.", url:"https://maps.app.goo.gl/k1Z5zwPpQ4oiZDE57" },
+    { node:"Witness Testimony Transcripts", multiplicity:["Ontological Analysis"], typology:"Intermediary", actant:"Non-Human", summary:"Interviews conducted in Istanbul in April 2016.", url:"https://saydnaya.amnesty.org/?kind=video&id=01" },
+    { node:"Call-To-Action", multiplicity:["Ontological Analysis"], typology:"Mediator", actant:"Non-Human", summary:"Routes reconstruction into an advocacy/petition, converting spatial evidence into involvement.", url:"https://saydnaya.amnesty.org/?kind=explore" },
+    { node:"Sensorial Forensic Verification", multiplicity:["Ontological Analysis"], typology:"Mediator", actant:"Non-Human", summary:"Cross-references multiple witness accounts into one spatially consistent sensorial model.", url:"https://saydnaya.amnesty.org/en/methodology.html" },
+    { node:"Amnesty International", multiplicity:["Contextual Analysis"], typology:"Mediator", actant:"Force", summary:"Collaborator, commissioner, funding agent, and a party in the interdisciplinary authorship of the project.", url:"https://www.amnesty.org.uk" }
   ];
 
-  const threads = [ ['sound-space','spatial'], ['spatial','sensory'], ['constraint','audience-node'], ['verification','authorship'] ];
+  const MULTIPLICITY_OPTIONS = ["Ontological Analysis","Historical Analysis","Contextual Analysis","Visual and Aesthetic Representation"];
+  const TYPOLOGY_OPTIONS = ["Intermediary","Mediator"];
+  const ACTANT_OPTIONS = ["Human","Non-Human","Force"];
+  const STOPWORDS = new Set(["their","which","about","other","these","those","there","where","while","would","could","should","being","after","before","between","itself","within","without","across","since","under","above","first","every","testimony","reconstruction","saydnaya"]);
 
-  const infoTexts = [
-    'Saydnaya: Inside a Syrian Torture Prison — published as "Saydnaya" on Forensic Architecture\u2019s site.',
-    'Forensic Architecture (Goldsmiths, University of London), with Amnesty International. Acoustic investigation by Lawrence Abu Hamdan; principal investigator Eyal Weizman.',
-    '2016 — interviews conducted April 2016; presented at the 2016 Venice Biennale.',
-    'An interactive web investigation: a navigable 3D reconstruction paired with acoustic modeling, testimony video, and a downloadable report.',
-    'General public and international press; human-rights monitors; campaigners; the spatial-forensics research community Forensic Architecture addresses through exhibitions and publications.',
-    'Saydnaya prison, north of Damascus, has been closed to independent monitors since 2011, and no recent photographs of its interior exist. Forensic Architecture and Amnesty International worked with five former detainees, now refugees in Turkey, to rebuild the prison from memory.',
-    'An architect guided each witness through a 3D modeling process, cross-checking descriptions of cells, stairwells, and corridors against a model built from satellite imagery and prior interviews.',
-    'Because many prisoners were kept blindfolded or in darkness, sound became a primary form of evidence — witnesses\u2019 memories of echo and reverberation helped verify the scale and layout of specific spaces.',
-    'The resulting site lets a visitor move through the prison by location or by witness, folding testimony, video, and model into one interface, linking out to Amnesty\u2019s campaign for independent access.'
+  const state = { multiplicity:new Set(), typology:new Set(), actant:new Set(), keywords:new Set(), search:'' };
+
+  // ---------- filter chip rendering ----------
+  const propertyFilters = document.getElementById('propertyFilters');
+  function makePropRow(label, key, options) {
+    const row = document.createElement('div');
+    row.className = 'prop-row';
+    const lab = document.createElement('span');
+    lab.className = 'prop-label';
+    lab.textContent = label;
+    row.appendChild(lab);
+    options.forEach(opt => {
+      const chip = document.createElement('button');
+      chip.className = 'chip';
+      chip.textContent = opt;
+      chip.addEventListener('click', () => {
+        if (state[key].has(opt)) { state[key].delete(opt); chip.classList.remove('is-active'); }
+        else { state[key].add(opt); chip.classList.add('is-active'); }
+        applyFilters();
+      });
+      row.appendChild(chip);
+    });
+    return row;
+  }
+  propertyFilters.appendChild(makePropRow('Analysis Multiplicity', 'multiplicity', MULTIPLICITY_OPTIONS));
+  propertyFilters.appendChild(makePropRow('Ontological Typology', 'typology', TYPOLOGY_OPTIONS));
+  propertyFilters.appendChild(makePropRow('Actant Class', 'actant', ACTANT_OPTIONS));
+
+  document.getElementById('clearProps').addEventListener('click', () => {
+    state.multiplicity.clear(); state.typology.clear(); state.actant.clear();
+    document.querySelectorAll('#propertyFilters .chip').forEach(c => c.classList.remove('is-active'));
+    applyFilters();
+  });
+
+  // ---------- glossary card flip ----------
+  const GLOSSARY = [
+    { prop: 'Analysis Multiplicity', term: null, def: 'Which register(s) a node runs through — Ontological, Historical, Contextual, or Visual and Aesthetic.' },
+    { prop: 'Ontological Typology', term: 'Intermediary', def: 'Transports without transforming. Swap it for a similar thing, and the network still works the same.' },
+    { prop: 'Ontological Typology', term: 'Mediator', def: 'Transforms, translates, or reshapes what passes through it. The specific way it acts changes what happens downstream.' },
+    { prop: 'Actant Class', term: 'Human', def: 'Could you interview it? Ask what it experienced?' },
+    { prop: 'Actant Class', term: 'Non-Human', def: 'Bounded and locatable, you could point to it as one thing.' },
+    { prop: 'Actant Class', term: 'Force', def: 'Real effects, but no single body and no fixed boundary, a condition, institution, or pressure.' }
   ];
+  const glossaryContent = document.getElementById('glossaryContent');
+  GLOSSARY.forEach(g => {
+    const entry = document.createElement('div');
+    entry.className = 'glossary-entry';
+    const termHtml = g.term ? ` <span class="g-select">/ ${g.term}</span>` : '';
+    entry.innerHTML = `<div class="g-term"><span class="g-prop">${g.prop}</span>${termHtml}</div><div class="g-def">${g.def}</div>`;
+    glossaryContent.appendChild(entry);
+  });
+  function toggleGlossary() {
+    document.getElementById('filterTile1').classList.toggle('is-flipped');
+  }
+  document.getElementById('glossaryToggle').addEventListener('click', toggleGlossary);
+  document.getElementById('glossaryToggleBack').addEventListener('click', toggleGlossary);
 
-  const bibTexts = [
-    '<a href="https://forensic-architecture.org/investigation/saydnaya" target="_blank" rel="noopener">Forensic Architecture, project page for Saydnaya</a>',
-    '<a href="https://saydnaya.amnesty.org/?kind=explore" target="_blank" rel="noopener">Amnesty International, "Explore Saydnaya"</a>',
-    '<a href="https://saydnaya.amnesty.org/en/about.html" target="_blank" rel="noopener">Amnesty International, About — Explore Saydnaya</a>',
-    '<a href="https://saydnaya.amnesty.org/en/methodology.html" target="_blank" rel="noopener">Amnesty International, Methodology — Explore Saydnaya</a>',
-    '<a href="http://lawrenceabuhamdan.com/saydnaya" target="_blank" rel="noopener">Lawrence Abu Hamdan, project note on Saydnaya</a>',
-    '<a href="https://earshot.ngo/investigations/saydnaya-inside-a-syrian-torture-prison" target="_blank" rel="noopener">Earshot, "Saydnaya: Inside a Syrian torture prison"</a>',
-    '<a href="https://www.archdaily.com/793480/forensic-architecture-digitally-reconstruct-secret-syrian-torture-prison-from-the-memories-of-survivors" target="_blank" rel="noopener">ArchDaily, on the reconstruction from survivors\u2019 memories</a>',
-    '<a href="https://www.dezeen.com/2016/08/19/forensic-architecture-digital-reconstruction-saydnaya-inside-syrian-torture-prison/" target="_blank" rel="noopener">Dezeen, on the digital reconstruction</a>',
-    '<a href="https://www.fastcompany.com/3068329/how-forensic-architecture-revealed-details-of-a-secret-military-priso" target="_blank" rel="noopener">Fast Company, on revealing details of the prison</a>',
-    '<a href="https://docubase.mit.edu/project/saydnaya-inside-a-syrian-torture-prison/" target="_blank" rel="noopener">MIT Open Documentary Lab, Docubase entry</a>'
-  ];
+  // ---------- keyword extraction ----------
+  const freq = {};
+  nodes.forEach(n => {
+    const text = (n.node + ' ' + n.summary).toLowerCase().replace(/[^a-z\s]/g, ' ');
+    text.split(/\s+/).forEach(w => {
+      if (w.length >= 5 && !STOPWORDS.has(w)) freq[w] = (freq[w] || 0) + 1;
+    });
+  });
+  const keywords = Object.keys(freq).sort((a, b) => freq[b] - freq[a] || a.localeCompare(b)).slice(0, 42).sort();
 
+  const keywordChips = document.getElementById('keywordChips');
+  keywords.forEach(kw => {
+    const chip = document.createElement('button');
+    chip.className = 'chip';
+    chip.textContent = kw;
+    chip.addEventListener('click', () => {
+      if (state.keywords.has(kw)) { state.keywords.delete(kw); chip.classList.remove('is-active'); }
+      else { state.keywords.add(kw); chip.classList.add('is-active'); }
+      applyFilters();
+    });
+    keywordChips.appendChild(chip);
+  });
+  document.getElementById('clearKeywords').addEventListener('click', () => {
+    state.keywords.clear();
+    state.search = '';
+    document.getElementById('keywordSearch').value = '';
+    document.querySelectorAll('#keywordChips .chip').forEach(c => c.classList.remove('is-active'));
+    applyFilters();
+  });
+  document.getElementById('keywordSearch').addEventListener('input', (e) => {
+    state.search = e.target.value.trim().toLowerCase();
+    applyFilters();
+  });
+
+  function nodeMatches(n) {
+    if (state.multiplicity.size && !n.multiplicity.some(m => state.multiplicity.has(m))) return false;
+    if (state.typology.size && !state.typology.has(n.typology)) return false;
+    if (state.actant.size && !state.actant.has(n.actant)) return false;
+    const text = (n.node + ' ' + n.summary).toLowerCase();
+    if (state.keywords.size && ![...state.keywords].some(kw => text.includes(kw))) return false;
+    if (state.search && !text.includes(state.search)) return false;
+    return true;
+  }
+
+  function anyFilterActive() {
+    return state.multiplicity.size > 0 || state.typology.size > 0 || state.actant.size > 0 || state.keywords.size > 0 || state.search.length > 0;
+  }
+
+  function applyFilters() {
+    const active = anyFilterActive();
+    nodes.forEach((n, i) => {
+      const match = nodeMatches(n);
+      const el = document.getElementById(`node-${i}`);
+      if (el) {
+        el.classList.toggle('is-dim', active && !match);
+        el.classList.toggle('is-match', active && match);
+      }
+    });
+    document.querySelectorAll('.line, .thread').forEach(line => {
+      const a = line.dataset.a, b = line.dataset.b;
+      const aDim = active && !nodeMatches(nodes[+a]), bDim = active && !nodeMatches(nodes[+b]);
+      line.style.opacity = (aDim || bDim) ? 0.05 : (line.classList.contains('thread') ? 0.4 : 0.35);
+    });
+  }
+
+  // ---------- rhizome layout: real coordinates lifted directly from the Figma board ----------
   const canvas = document.getElementById('canvas');
   const svg = document.getElementById('canvasSvg');
-  const bibEl = document.getElementById('bibliography');
   const overlay = document.getElementById('overlay');
   const detail = document.getElementById('detail');
   const svgNS = 'http://www.w3.org/2000/svg';
-  const crawlClasses = ['crawl-a','crawl-b','crawl-c'];
-  const positions = {};
 
-  // interleave nodes with the datasheet/description texts (bibliography stays separate, aggregated below)
-  const items = [];
-  let ni = 0, ti = 0;
-  while (ni < nodes.length || ti < infoTexts.length) {
-    if (ni < nodes.length) items.push({ type:'node', data: nodes[ni++] });
-    if (ti < infoTexts.length) items.push({ type:'text', data: infoTexts[ti++] });
-  }
+  // raw Figma frame centers (x + 172, y + 155 from each frame's top-left, per the board's metadata)
+  const figmaCenters = {
+    "Amnesty International": [-285, 155],
+    "Forensic Architecture": [571, 155],
+    "1635 film-Istanbul": [1315, 155],
+    "Co-Observer/Co-Author": [399, -1669],
+    "Saydnaya, Syria (Location)": [-322, -554],
+    "Saydnaya Torture Prison (Space)": [127, -554],
+    "Syrian Civil War": [-113, -1239],
+    "Testimony-to-3D Spatial Reconstruction": [1404, -1758],
+    "Testimony-to-Sound Reconstruction": [1867, -1758],
+    "Call-To-Action": [3183, -2784],
+    "Textual Captions": [3183, -1743],
+    "Drag-To-Look interface": [3183, -2140],
+    "Credit Structure": [2708, -2784],
+    "Bilingual Text": [2260, -2784],
+    "Constraint-As-Method": [1096, -554],
+    "Web Interface Modes (Location/Witness)": [2607, -1942],
+    "Sensorial Forensic Verification": [1636, -1133],
+    "Witness Testimony Transcripts": [1636, -554],
+    "Web Environment": [1636, -2250],
+    "Torture in Saydnaya Prison (Project/Incident)": [560, -554],
+    "Procedural Rhetoric": [1292, -2784],
+    "\u201cWalking Simulator\u201d Aesthetic": [1123, -3276],
+    "Interactive Documentary \u201cI-Doc\u201d": [1507, -3276],
+    "Human Slaughterhouse Report": [-1724, -2250],
+    "Muted Color Pallet": [-113, -2633],
+    "Forensic Aesthetic": [505, -2665],
+    "Architectural Representation Methods": [231, -3189],
+    "Cartographic Representation Methods": [615, -3189],
+    "Sensory register": [779, -2053]
+  };
 
-  const COLS = 3;
-  const CELL_H = 185;
-  const total = items.length;
-  const rows = Math.ceil(total / COLS);
-  const canvasHeight = rows * CELL_H;
+  const rawXs = Object.values(figmaCenters).map(p => p[0]);
+  const rawYs = Object.values(figmaCenters).map(p => p[1]);
+  const minX = Math.min(...rawXs), maxX = Math.max(...rawXs);
+  const minY = Math.min(...rawYs), maxY = Math.max(...rawYs);
+  const SCALE = 0.4;
+  const canvasWidth = (maxX - minX) * SCALE + 100;
+  const canvasHeight = (maxY - minY) * SCALE + 100;
+  canvas.style.width = `${canvasWidth}px`;
   canvas.style.height = `${canvasHeight}px`;
-  svg.setAttribute('viewBox', `0 0 100 ${canvasHeight}`);
+  svg.setAttribute('viewBox', `0 0 ${canvasWidth} ${canvasHeight}`);
 
-  const cellW = 100 / COLS;
-  items.forEach((item, i) => {
-    const col = i % COLS;
-    const row = Math.floor(i / COLS);
-    const jitterX = (Math.random() - 0.5) * cellW * 0.3;
-    const jitterY = (Math.random() - 0.5) * CELL_H * 0.25;
-    const x = col * cellW + cellW / 2 + jitterX;
-    const yPx = row * CELL_H + CELL_H / 2 + jitterY;
-    if (item.type === 'node') positions[item.data.id] = { x, yPx };
-    item._x = x; item._yPx = yPx;
+  const positions = nodes.map(n => {
+    const [rx, ry] = figmaCenters[n.node];
+    return { x: (rx - minX) * SCALE + 50, y: (ry - minY) * SCALE + 50 };
   });
 
-  const nodeSeq = items.filter(it => it.type === 'node').map(it => it.data);
-  nodeSeq.forEach((node, i) => {
-    if (i === 0) return;
-    const a = positions[nodeSeq[i-1].id], b = positions[node.id];
+  const canvasViewport = document.getElementById('canvasViewport');
+  const rhizomeSection = document.getElementById('rhizome');
+  let currentScale = 1;
+  let visibleLocal = { left: 0, right: canvasWidth, top: 0, bottom: canvasHeight };
+  function fitToScreen() {
+    const containerWidth = rhizomeSection.clientWidth;
+    const containerHeight = rhizomeSection.clientHeight;
+    const fitScaleW = containerWidth / canvasWidth;
+    const fitScaleH = containerHeight / canvasHeight;
+    const scaleFactor = Math.max(fitScaleW, fitScaleH);
+    currentScale = scaleFactor;
+    const scaledW = canvasWidth * scaleFactor, scaledH = canvasHeight * scaleFactor;
+    const tx = (containerWidth - scaledW) / 2, ty = (containerHeight - scaledH) / 2;
+    canvas.style.transform = `translate(${tx}px, ${ty}px) scale(${scaleFactor})`;
+    canvasViewport.style.width = `100%`;
+    canvasViewport.style.height = `100%`;
+    visibleLocal = {
+      left: -tx / scaleFactor,
+      right: (containerWidth - tx) / scaleFactor,
+      top: -ty / scaleFactor,
+      bottom: (containerHeight - ty) / scaleFactor
+    };
+  }
+  window.addEventListener('resize', () => { fitToScreen(); requestRhizomeUpdate(); });
+
+  // real authored connections, transcribed from the Figma board's actual arrows
+  const nameToIndex = {};
+  nodes.forEach((n, i) => { nameToIndex[n.node] = i; });
+
+  const edges = [
+    ["Architectural Representation Methods", "Forensic Aesthetic"],
+    ["Cartographic Representation Methods", "Forensic Aesthetic"],
+    ["Muted Color Pallet", "Forensic Aesthetic"],
+    ["\u201cWalking Simulator\u201d Aesthetic", "Procedural Rhetoric"],
+    ["Interactive Documentary \u201cI-Doc\u201d", "Procedural Rhetoric"],
+    ["Procedural Rhetoric", "Forensic Aesthetic"],
+    ["Forensic Aesthetic", "Web Environment"],
+    ["Bilingual Text", "Web Environment"],
+    ["Credit Structure", "Web Environment"],
+    ["Call-To-Action", "Web Environment"],
+    ["Web Interface Modes (Location/Witness)", "Web Environment"],
+    ["Drag-To-Look interface", "Web Interface Modes (Location/Witness)"],
+    ["Textual Captions", "Web Interface Modes (Location/Witness)"],
+    ["Testimony-to-3D Spatial Reconstruction", "Web Environment"],
+    ["Testimony-to-Sound Reconstruction", "Web Environment"],
+    ["Sensorial Forensic Verification", "Testimony-to-3D Spatial Reconstruction"],
+    ["Sensorial Forensic Verification", "Testimony-to-Sound Reconstruction"],
+    ["Witness Testimony Transcripts", "Sensorial Forensic Verification"],
+    ["Constraint-As-Method", "Witness Testimony Transcripts"],
+    ["Torture in Saydnaya Prison (Project/Incident)", "Constraint-As-Method"],
+    ["Saydnaya Torture Prison (Space)", "Torture in Saydnaya Prison (Project/Incident)"],
+    ["Saydnaya, Syria (Location)", "Saydnaya Torture Prison (Space)"],
+    ["Amnesty International", "Torture in Saydnaya Prison (Project/Incident)"],
+    ["Forensic Architecture", "Torture in Saydnaya Prison (Project/Incident)"],
+    ["1635 film-Istanbul", "Torture in Saydnaya Prison (Project/Incident)"],
+    ["Amnesty International", "Human Slaughterhouse Report"],
+    ["Human Slaughterhouse Report", "Web Environment"],
+    ["Syrian Civil War", "Co-Observer/Co-Author"],
+    ["Syrian Civil War", "Saydnaya Torture Prison (Space)"],
+    ["Co-Observer/Co-Author", "Saydnaya Torture Prison (Space)"],
+    ["Co-Observer/Co-Author", "Sensory register"],
+    ["Sensory register", "Web Environment"],
+    ["Co-Observer/Co-Author", "Torture in Saydnaya Prison (Project/Incident)"]
+  ];
+
+  edges.forEach(([from, to]) => {
+    const i = nameToIndex[from], j = nameToIndex[to];
+    if (i === undefined || j === undefined) return;
     const line = document.createElementNS(svgNS, 'line');
     line.setAttribute('class', 'line');
-    line.setAttribute('x1', a.x); line.setAttribute('y1', a.yPx);
-    line.setAttribute('x2', b.x); line.setAttribute('y2', b.yPx);
+    line.dataset.a = i; line.dataset.b = j;
     svg.appendChild(line);
   });
 
-  threads.forEach(([a, b]) => {
-    if (!positions[a] || !positions[b]) return;
-    const line = document.createElementNS(svgNS, 'line');
-    line.setAttribute('class', 'thread');
-    line.setAttribute('x1', positions[a].x); line.setAttribute('y1', positions[a].yPx);
-    line.setAttribute('x2', positions[b].x); line.setAttribute('y2', positions[b].yPx);
-    svg.appendChild(line);
+  const blobRadii = [];
+  nodes.forEach((n, i) => {
+    const el = document.createElement('button');
+    el.type = 'button';
+    el.id = `node-${i}`;
+    el.className = 'blob';
+    el.textContent = n.node;
+
+    const sizeMul = 0.85 + Math.random() * 0.55; // 0.85–1.4x, so some nodes read visibly bigger than others
+    const lengthBoost = Math.max(0, n.node.length - 18) * 1.6; // extra room for longer names so text doesn't cram against the shape
+    el.style.fontSize = `${(10.5 * sizeMul).toFixed(1)}px`;
+    el.style.padding = `${(9 * sizeMul).toFixed(1)}px ${(13 * sizeMul).toFixed(1)}px`;
+    el.style.maxWidth = `${Math.round(130 * sizeMul + lengthBoost)}px`;
+    blobRadii[i] = 60 * sizeMul + lengthBoost / 2.4; // half-footprint used for collision math below
+
+    const r = () => 15 + Math.random() * 70;
+    el.style.borderRadius = `${r()}% ${100 - r()}% ${r()}% ${100 - r()}% / ${r()}% ${100 - r()}% ${r()}% ${100 - r()}%`;
+
+    let didDragNode = false;
+    el.addEventListener('mousedown', (e) => {
+      const startX = e.clientX, startY = e.clientY;
+      const startPosX = positions[i].x, startPosY = positions[i].y;
+      didDragNode = false;
+      const onMove = (e2) => {
+        const dxPx = e2.clientX - startX, dyPx = e2.clientY - startY;
+        if (Math.abs(dxPx) > 4 || Math.abs(dyPx) > 4) didDragNode = true;
+        positions[i].x = startPosX + dxPx / currentScale;
+        positions[i].y = startPosY + dyPx / currentScale;
+        requestRhizomeUpdate();
+      };
+      const onUp = () => {
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('mouseup', onUp);
+      };
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onUp);
+      e.preventDefault();
+    });
+    el.addEventListener('click', (e) => { if (didDragNode) { didDragNode = false; return; } openDetail(n, e); });
+    canvas.appendChild(el);
   });
 
-  function displayLabel(label) {
-    return label.replace(/\s*\b(operator|layer)\b\s*$/i, '').trim();
+  canvas.style.width = `${canvasWidth}px`;
+  canvas.style.height = `${canvasHeight}px`;
+  fitToScreen();
+
+  // ---------- tile awareness: nodes and connectors avoid whichever tiles currently overlap them ----------
+  const TILE_MARGIN = 20; // viewport-pixel buffer kept between a tile's edge and node/connector content
+  const appFrame = document.getElementById('appFrame');
+  const tileEls = [document.querySelector('header'), ...document.querySelectorAll('.filter-block')];
+
+  function isDesktopLayout() {
+    return window.matchMedia('(min-width:900px)').matches;
   }
 
-  items.forEach((item, i) => {
-    if (item.type === 'node') {
-      const node = item.data;
-      const pos = positions[node.id];
-      const el = document.createElement('button');
-      el.type = 'button';
-      el.className = `blob ${crawlClasses[i % crawlClasses.length]}`;
-      el.style.left = `${pos.x}%`;
-      el.style.top = `${pos.yPx}px`;
-      el.style.animationDuration = `${6 + (i % 5) * 1.3}s`;
-      el.textContent = displayLabel(node.label);
-      el.addEventListener('click', (e) => openDetail(node, e));
-      canvas.appendChild(el);
-    } else {
-      const d = document.createElement('div');
-      d.className = 'floater';
-      d.style.left = `${item._x}%`;
-      d.style.top = `${item._yPx - 20}px`;
-      d.style.maxWidth = `${cellW * 0.85}%`;
-      d.style.textAlign = 'center';
-      d.innerHTML = item.data;
-      canvas.appendChild(d);
+  function getTileRectsInCanvasLocal() {
+    if (!isDesktopLayout()) return [];
+    const canvasRect = canvas.getBoundingClientRect();
+    return tileEls.map(t => {
+      const r = t.getBoundingClientRect();
+      return {
+        left: (r.left - TILE_MARGIN - canvasRect.left) / currentScale,
+        right: (r.right + TILE_MARGIN - canvasRect.left) / currentScale,
+        top: (r.top - TILE_MARGIN - canvasRect.top) / currentScale,
+        bottom: (r.bottom + TILE_MARGIN - canvasRect.top) / currentScale
+      };
+    });
+  }
+
+  function resolveDisplacedPositions() {
+    const tileRects = getTileRectsInCanvasLocal();
+    const result = positions.map(p => ({ x: p.x, y: p.y }));
+    for (let pass = 0; pass < 8; pass++) {
+      // boundary: keep every node within the currently visible part of the rhizome — same rule, every edge
+      result.forEach((p, i) => {
+        const rad = blobRadii[i];
+        p.x = Math.max(visibleLocal.left + rad, Math.min(p.x, visibleLocal.right - rad));
+        p.y = Math.max(visibleLocal.top + rad, Math.min(p.y, visibleLocal.bottom - rad));
+      });
+
+      // nodes: keep every pair of nodes from overlapping each other
+      for (let i = 0; i < result.length; i++) {
+        for (let j = i + 1; j < result.length; j++) {
+          const dx = result[j].x - result[i].x, dy = result[j].y - result[i].y;
+          let dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
+          const minDist = blobRadii[i] + blobRadii[j] + 8;
+          if (dist < minDist) {
+            const overlap = (minDist - dist) / 2;
+            const ux = dx / dist, uy = dy / dist;
+            result[i].x -= ux * overlap; result[i].y -= uy * overlap;
+            result[j].x += ux * overlap; result[j].y += uy * overlap;
+          }
+        }
+      }
+
+      // tiles: clear any tile a node has drifted into — but the push itself is bounded to the
+      // same visible edges above, so it can never overshoot past a boundary the way a later,
+      // separate reconciliation pass could (that mismatch was the actual left/right bug)
+      result.forEach((p, i) => {
+        const rad = blobRadii[i];
+        tileRects.forEach(t => {
+          const tl = t.left - rad, tr = t.right + rad, tt = t.top - rad, tb = t.bottom + rad;
+          if (p.x > tl && p.x < tr && p.y > tt && p.y < tb) {
+            const dLeft = p.x - tl, dRight = tr - p.x, dTop = p.y - tt, dBottom = tb - p.y;
+            const minD = Math.min(dLeft, dRight, dTop, dBottom);
+            if (minD === dLeft) p.x = Math.max(visibleLocal.left + rad, tl - 4);
+            else if (minD === dRight) p.x = Math.min(visibleLocal.right - rad, tr + 4);
+            else if (minD === dTop) p.y = Math.max(visibleLocal.top + rad, tt - 4);
+            else p.y = Math.min(visibleLocal.bottom - rad, tb + 4);
+          }
+        });
+      });
     }
-  });
-
-  // bibliography: aggregated into one tight cluster at the end, not spread down the flow
-  const bibHeight = bibTexts.length * 92 + 260;
-  bibEl.style.height = `${bibHeight}px`;
-  bibTexts.forEach((txt, i) => {
-    const d = document.createElement('div');
-    d.className = 'floater';
-    d.style.left = `${28 + (i % 3) * 16}%`;
-    d.style.top = `${80 + i * 84}px`;
-    d.style.maxWidth = '30ch';
-    d.innerHTML = txt;
-    bibEl.appendChild(d);
-  });
-
-  // slowly invert the page to black/white as the bibliography cluster scrolls into view
-  function updateTheme() {
-    const rect = bibEl.getBoundingClientRect();
-    const vh = window.innerHeight;
-    let progress = 1 - (rect.top / vh);
-    progress = Math.max(0, Math.min(1, progress));
-    const bg = Math.round(255 * (1 - progress));
-    const ink = Math.round(255 * progress);
-    document.documentElement.style.setProperty('--bg', `rgb(${bg},${bg},${bg})`);
-    document.documentElement.style.setProperty('--ink', `rgb(${ink},${ink},${ink})`);
+    return result;
   }
-  window.addEventListener('scroll', updateTheme, { passive: true });
-  window.addEventListener('resize', updateTheme);
-  updateTheme();
 
-  let following = false;
-  function openDetail(node, e) {
+  function renderRhizome() {
+    const displaced = resolveDisplacedPositions();
+    nodes.forEach((n, i) => {
+      const el = document.getElementById(`node-${i}`);
+      if (el) { el.style.left = `${displaced[i].x}px`; el.style.top = `${displaced[i].y}px`; }
+    });
+    document.querySelectorAll('.line, .thread').forEach(line => {
+      const a = +line.dataset.a, b = +line.dataset.b;
+      line.setAttribute('x1', displaced[a].x); line.setAttribute('y1', displaced[a].y);
+      line.setAttribute('x2', displaced[b].x); line.setAttribute('y2', displaced[b].y);
+    });
+  }
+
+  let rafPending = false;
+  function requestRhizomeUpdate() {
+    if (rafPending) return;
+    rafPending = true;
+    requestAnimationFrame(() => { renderRhizome(); rafPending = false; });
+  }
+
+  function getTileBox(tile) {
+    const r = tile.getBoundingClientRect();
+    const f = appFrame.getBoundingClientRect();
+    return { left: r.left - f.left, top: r.top - f.top, width: r.width, height: r.height };
+  }
+  function setTileBox(tile, left, top) {
+    tile.style.left = `${left}px`;
+    tile.style.top = `${top}px`;
+    tile.style.right = 'auto'; tile.style.bottom = 'auto';
+  }
+  function resolveTileCollisions(activeTile) {
+    const TILE_GAP = 10;
+    const frameW = appFrame.clientWidth, frameH = appFrame.clientHeight;
+    const aBox = getTileBox(activeTile);
+    tileEls.filter(t => t !== activeTile).forEach(other => {
+      const bBox = getTileBox(other);
+      const overlapX = Math.min(aBox.left + aBox.width, bBox.left + bBox.width) - Math.max(aBox.left, bBox.left);
+      const overlapY = Math.min(aBox.top + aBox.height, bBox.top + bBox.height) - Math.max(aBox.top, bBox.top);
+      if (overlapX > 0 && overlapY > 0) {
+        let newLeft = bBox.left, newTop = bBox.top;
+        if (overlapX < overlapY) {
+          newLeft = bBox.left < aBox.left ? aBox.left - bBox.width - TILE_GAP : aBox.left + aBox.width + TILE_GAP;
+        } else {
+          newTop = bBox.top < aBox.top ? aBox.top - bBox.height - TILE_GAP : aBox.top + aBox.height + TILE_GAP;
+        }
+        newLeft = Math.max(10, Math.min(newLeft, frameW - bBox.width - 10));
+        newTop = Math.max(10, Math.min(newTop, frameH - bBox.height - 10));
+        setTileBox(other, newLeft, newTop);
+      }
+    });
+  }
+
+  function makeDraggable(tile) {
+    const handle = tile.querySelector('.drag-handle');
+    if (!handle) return;
+    let dragging = false, startX, startY, startLeft, startTop;
+    handle.addEventListener('mousedown', (e) => {
+      if (!isDesktopLayout()) return;
+      dragging = true;
+      rhizomeSection.classList.add('is-adjusting');
+      const rect = tile.getBoundingClientRect();
+      const frameRect = appFrame.getBoundingClientRect();
+      startLeft = rect.left - frameRect.left;
+      startTop = rect.top - frameRect.top;
+      startX = e.clientX; startY = e.clientY;
+      tile.style.left = `${startLeft}px`;
+      tile.style.top = `${startTop}px`;
+      tile.style.right = 'auto'; tile.style.bottom = 'auto';
+      document.body.style.userSelect = 'none';
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (!dragging) return;
+      const EDGE = 10;
+      const frameW = appFrame.clientWidth, frameH = appFrame.clientHeight;
+      const tileW = tile.offsetWidth, tileH = tile.offsetHeight;
+      let newLeft = startLeft + (e.clientX - startX);
+      let newTop = startTop + (e.clientY - startY);
+      newLeft = Math.max(EDGE, Math.min(newLeft, frameW - tileW - EDGE));
+      newTop = Math.max(EDGE, Math.min(newTop, frameH - tileH - EDGE));
+      tile.style.left = `${newLeft}px`;
+      tile.style.top = `${newTop}px`;
+      resolveTileCollisions(tile);
+      requestRhizomeUpdate();
+    });
+    window.addEventListener('mouseup', () => {
+      if (dragging) {
+        dragging = false;
+        document.body.style.userSelect = '';
+        requestRhizomeUpdate();
+        setTimeout(() => rhizomeSection.classList.remove('is-adjusting'), 300);
+      }
+    });
+  }
+
+  function makeResizable(tile) {
+    tile.querySelectorAll('.resize-handle').forEach(handle => {
+      const corner = handle.dataset.corner;
+      let resizing = false, startX, startY, startW, startH, startLeft, startTop;
+      handle.addEventListener('mousedown', (e) => {
+        if (!isDesktopLayout()) return;
+        resizing = true;
+        rhizomeSection.classList.add('is-adjusting');
+        const rect = tile.getBoundingClientRect();
+        const frameRect = appFrame.getBoundingClientRect();
+        startW = rect.width; startH = rect.height;
+        startLeft = rect.left - frameRect.left; startTop = rect.top - frameRect.top;
+        startX = e.clientX; startY = e.clientY;
+        document.body.style.userSelect = 'none';
+        e.preventDefault(); e.stopPropagation();
+      });
+      window.addEventListener('mousemove', (e) => {
+        if (!resizing) return;
+        const dx = e.clientX - startX, dy = e.clientY - startY;
+        const frameW = appFrame.clientWidth, frameH = appFrame.clientHeight;
+        let newW = startW, newH = startH, newLeft = startLeft, newTop = startTop;
+        if (corner === 'br') { newW = startW + dx; newH = startH + dy; }
+        else if (corner === 'bl') { newW = startW - dx; newH = startH + dy; newLeft = startLeft + dx; }
+        else if (corner === 'tr') { newW = startW + dx; newH = startH - dy; newTop = startTop + dy; }
+        else if (corner === 'tl') { newW = startW - dx; newH = startH - dy; newLeft = startLeft + dx; newTop = startTop + dy; }
+        newW = Math.max(220, newW); newH = Math.max(140, newH);
+        newLeft = Math.max(10, Math.min(newLeft, frameW - newW - 10));
+        newTop = Math.max(10, Math.min(newTop, frameH - newH - 10));
+        tile.style.width = `${newW}px`; tile.style.height = `${newH}px`;
+        tile.style.left = `${newLeft}px`; tile.style.top = `${newTop}px`;
+        tile.style.right = 'auto'; tile.style.bottom = 'auto';
+        resolveTileCollisions(tile);
+        requestRhizomeUpdate();
+      });
+      window.addEventListener('mouseup', () => {
+        if (resizing) {
+          resizing = false;
+          document.body.style.userSelect = '';
+          requestRhizomeUpdate();
+          setTimeout(() => rhizomeSection.classList.remove('is-adjusting'), 300);
+        }
+      });
+    });
+  }
+  tileEls.forEach(makeDraggable);
+  tileEls.forEach(makeResizable);
+  renderRhizome();
+
+  let activeStream = null;
+
+  function openDetail(n, e) {
+    let linkField;
+    if (n.node === "Co-Observer/Co-Author") {
+      linkField = `
+        <button class="observer-btn" id="observerBtn">Become an observer</button>
+        <div class="observer-status" id="observerStatus"></div>
+        <video class="observer-video" id="observerVideo" autoplay muted playsinline style="display:none;"></video>
+      `;
+    } else if (n.url) {
+      linkField = `<a class="link-window" href="${n.url}" target="_blank" rel="noopener">
+           <div class="link-window-bar">
+             <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+             <span class="link-window-host">${new URL(n.url).hostname}</span>
+           </div>
+           <img src="https://image.thum.io/get/width/500/grayscale/noanimate/${n.url}" alt="Preview of ${n.node}'s linked page" loading="lazy" />
+         </a>`;
+    } else {
+      linkField = `<div class="field-value" style="opacity:.6;">No linked page</div>`;
+    }
     detail.innerHTML = `
-      <div class="plateau">${node.plateau}</div>
-      <h4>${node.label}</h4>
-      <div class="typ">${node.typology}</div>
-      <p>${node.summary}</p>
+      <button class="close-btn" id="closeDetail">close ✕</button>
+      <div class="tags">${n.multiplicity.map(m => `<span class="tag">${m}</span>`).join('')}</div>
+      <h4>${n.node}</h4>
+      <div class="field"><div class="field-label">Ontological Typology</div><div class="field-value">${n.typology}</div></div>
+      <div class="field"><div class="field-label">Actant Class</div><div class="field-value">${n.actant}</div></div>
+      <div class="field"><div class="field-label">Summary</div><div class="field-value">${n.summary}</div></div>
+      <div class="field"><div class="field-label">Link</div>${linkField}</div>
     `;
     detail.classList.add('is-on');
     overlay.classList.add('is-on');
-    following = true;
-    positionDetail(e.clientX, e.clientY);
+    document.getElementById('closeDetail').addEventListener('click', closeDetail);
+
+    if (n.node === "Co-Observer/Co-Author") {
+      const btn = document.getElementById('observerBtn');
+      const status = document.getElementById('observerStatus');
+      const video = document.getElementById('observerVideo');
+      btn.addEventListener('click', async () => {
+        status.textContent = 'Requesting camera access\u2026';
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+          activeStream = stream;
+          video.srcObject = stream;
+          video.style.display = 'block';
+          btn.style.display = 'none';
+          status.textContent = 'You are now the observer.';
+        } catch (err) {
+          status.textContent = 'Camera access was denied or unavailable.';
+        }
+      });
+    }
   }
-
-  function positionDetail(x, y) {
-    const rect = detail.getBoundingClientRect();
-    const left = Math.min(window.innerWidth - rect.width - 16, Math.max(16, x + 18));
-    const top = Math.min(window.innerHeight - rect.height - 16, Math.max(16, y + 18));
-    detail.style.left = `${left}px`;
-    detail.style.top = `${top}px`;
-  }
-
-  document.addEventListener('mousemove', (e) => {
-    if (following) positionDetail(e.clientX, e.clientY);
-  });
-
-  overlay.addEventListener('click', () => {
-    following = false;
+  function closeDetail() {
     detail.classList.remove('is-on');
     overlay.classList.remove('is-on');
-  });
+    if (activeStream) {
+      activeStream.getTracks().forEach(t => t.stop());
+      activeStream = null;
+    }
+  }
+  overlay.addEventListener('click', closeDetail);
 </script>
 </body>
 </html>
